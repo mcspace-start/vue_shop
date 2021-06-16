@@ -1,0 +1,49 @@
+import Vue from 'vue'
+import 'element-ui/lib/theme-chalk/index.css'
+
+// import Element from 'element-ui'
+import {
+    Form,
+    FormItem,
+    Input,
+    Button,
+    Message,
+    Container,
+    Aside,
+    Header,
+    Main,
+    Menu,
+    MenuItem,
+    Submenu,
+    MenuItemGroup,
+    Breadcrumb,
+    BreadcrumbItem,
+    Card,
+    Row,
+    Col
+} from 'element-ui'
+
+// Vue.use(Element)
+Vue.use(Form)
+Vue.use(FormItem)
+Vue.use(Input)
+Vue.use(Button)
+Vue.use(Container)
+Vue.use(Aside)
+Vue.use(Header)
+Vue.use(Main)
+Vue.use(Menu)
+Vue.use(MenuItem)
+Vue.use(Submenu)
+Vue.use(MenuItemGroup)
+Vue.use(Breadcrumb)
+Vue.use(BreadcrumbItem)
+Vue.use(Card)
+Vue.use(Row)
+Vue.use(Col)
+
+
+
+
+// 在vue全局实例内定义$message挂载element Message组件
+Vue.prototype.$message = Message
