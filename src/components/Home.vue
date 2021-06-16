@@ -99,7 +99,6 @@ export default {
       const { data: res } = await this.$http.get('menus')
       if (res.meta.status !== 200) return this.$message.error(res.msg)
       this.menuList = res.data
-      console.log(res.data)
     },
     //切换菜单栏折叠展开
     toggleCollapse(activePath) {

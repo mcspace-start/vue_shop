@@ -20,7 +20,10 @@ import {
     BreadcrumbItem,
     Card,
     Row,
-    Col
+    Col,
+    Table,
+    TableColumn,
+    Switch
 } from 'element-ui'
 
 // Vue.use(Element)
@@ -41,9 +44,9 @@ Vue.use(BreadcrumbItem)
 Vue.use(Card)
 Vue.use(Row)
 Vue.use(Col)
-
-
-
+Vue.use(Table)
+Vue.use(TableColumn)
+Vue.use(Switch)
 
 // 在vue全局实例内定义$message挂载element Message组件
 Vue.prototype.$message = Message
