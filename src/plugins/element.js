@@ -23,7 +23,11 @@ import {
     Col,
     Table,
     TableColumn,
-    Switch
+    Switch,
+    Tooltip,
+    Pagination,
+    Dialog,
+    MessageBox
 } from 'element-ui'
 
 // Vue.use(Element)
@@ -47,6 +51,10 @@ Vue.use(Col)
 Vue.use(Table)
 Vue.use(TableColumn)
 Vue.use(Switch)
-
-// 在vue全局实例内定义$message挂载element Message组件
+Vue.use(Tooltip)
+Vue.use(Pagination)
+Vue.use(Dialog)
+// 在vue全局实例内定义 $message 挂载element Message组件
 Vue.prototype.$message = Message
+//在vue全局实例内定义 $confirm 挂载element MessageBox组件
+Vue.prototype.$confirm = MessageBox.confirm
