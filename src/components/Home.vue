@@ -80,7 +80,7 @@ export default {
       //是否折叠左边栏
       isCollapse: false,
       //被激活的链接地址
-      activePath:''
+      activePath: ''
     }
   },
   created() {
@@ -105,8 +105,8 @@ export default {
       this.isCollapse = !this.isCollapse
     },
     //保存路由地址
-    saveNavState(activePath){
-      window.sessionStorage.setItem('activePath',activePath)
+    saveNavState(activePath) {
+      window.sessionStorage.setItem('activePath', activePath)
       //切换子页面时更新路由地址
       this.activePath = window.sessionStorage.getItem('activePath')
     }

@@ -27,7 +27,11 @@ import {
     Tooltip,
     Pagination,
     Dialog,
-    MessageBox
+    MessageBox,
+    Tag,
+    Tree,
+    Select,
+    Option
 } from 'element-ui'
 
 // Vue.use(Element)
@@ -54,6 +58,11 @@ Vue.use(Switch)
 Vue.use(Tooltip)
 Vue.use(Pagination)
 Vue.use(Dialog)
+Vue.use(Tag)
+Vue.use(Tree)
+Vue.use(Select)
+Vue.use(Option)
+
 // 在vue全局实例内定义 $message 挂载element Message组件
 Vue.prototype.$message = Message
 //在vue全局实例内定义 $confirm 挂载element MessageBox组件
