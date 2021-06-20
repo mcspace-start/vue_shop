@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container >
     <!-- 头部区域 -->
     <el-header>
       <div>
@@ -54,7 +54,6 @@
           </el-submenu>
         </el-menu>
       </el-aside>
-
       <!-- 右侧内容区 -->
       <el-main>
         <!-- 路由占位符 -->
@@ -114,7 +113,7 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.el-container {
+.el-container{
   height: 100%;
 }
 .el-header {

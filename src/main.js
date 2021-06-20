@@ -11,8 +11,11 @@ import './plugins/element.js'
 import './assets/fonts/iconfont.css'
 // 导入axios
 import axios from 'axios'
-//将axios导入到vueprototype里
-Vue.prototype.$http = axios
+// 导入第三方表格树插件
+import TreeTable from 'vue-table-with-tree-grid'
+
+
+
 //设置axios默认根路径
 axios.defaults.baseURL = 'https://lianghj.top:8888/api/private/v1/'
 // axios对请求头对象挂载自定义段
@@ -22,6 +25,11 @@ axios.interceptors.request.use(config => {
   // 后面必须return config
   return config
 })
+
+//将axios导入到vueprototype里
+Vue.prototype.$http = axios
+//将表格树插件注册为全局组件
+Vue.component('tree-table', TreeTable)
 
 new Vue({
   router,
