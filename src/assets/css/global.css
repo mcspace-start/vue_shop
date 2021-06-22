@@ -23,4 +23,14 @@ html,body,#app{
 .el-pagination{
     margin-top: 15px;
 }
-
+/* 步骤条边距 */
+.el-steps{
+    margin:15px 0 ;
+}
+.el-step__title{
+    font-size: 13px !important;
+}
+/* 富文本编辑器编辑框高度 */
+.ql-editor {
+    min-height: 300px;
+}

@@ -1,5 +1,5 @@
 <template>
-  <el-container >
+  <el-container>
     <!-- 头部区域 -->
     <el-header>
       <div>
@@ -113,7 +113,7 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.el-container{
+.el-container {
   height: 100%;
 }
 .el-header {
