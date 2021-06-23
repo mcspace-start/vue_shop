@@ -31,7 +31,9 @@
         <!-- 按钮区域 -->
         <el-form-item class="btns">
           <!-- 提交登录 -->
-          <el-button type="primary" @click="login">登录</el-button>
+          <el-button type="primary" @click="login" :loading="loading"
+            >登录</el-button
+          >
           <!-- 重置 -->
           <el-button type="info" @click="resetLoginForm">重置</el-button>
         </el-form-item>
@@ -49,7 +51,7 @@ export default {
         username: 'admin',
         password: '123456'
       },
-      //   这是表单数据验证规则对象
+      // 这是表单数据验证规则对象
       loginFormRules: {
         //   验证用户名是否合法
         username: [
@@ -71,20 +73,25 @@ export default {
             trigger: 'blur'
           }
         ]
-      }
+      },
+      // true为登录中，登录成功后false
+      loading: false
     }
   },
   methods: {
-    //   重置登录表单
+    // 重置登录表单
     resetLoginForm() {
       this.$refs.loginFormRef.resetFields()
     },
     // 登录
     login() {
+      this.loading = true
       this.$refs.loginFormRef.validate(async valid => {
         if (!valid) return
         const { data: res } = await this.$http.post('login', this.loginForm)
         if (res.meta.status !== 200) return this.$message.success('登录成功')
+        // 更改按钮样式
+        this.loading = false
         this.$message({
           type: 'success',
           message: '登录成功'

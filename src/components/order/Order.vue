@@ -22,7 +22,7 @@
       </el-row>
 
       <!-- 订单列表数据 -->
-      <el-table :data="orderList" border stripe>
+      <el-table :data="orderList" border stripe v-loading="loading">
         <!-- 索引列 -->
         <el-table-column type="index" label="#"></el-table-column>
         <!-- 订单编号 -->
@@ -181,7 +181,9 @@ export default {
       progressVisible: false,
       // 物流信息
       progressInfo: [],
-      search_id: ''
+      search_id: '',
+      // 遮罩层
+      loading: true
     }
   },
   created() {
@@ -200,14 +202,17 @@ export default {
       // 赋值
       this.total = res.data.total
       this.orderList = res.data.goods
+      this.loading = false
     },
     // 改变页码大小时触发
     handleSizeChange(newSize) {
+      this.loading = true
       this.queryInfo.pagesize = newSize
       this.getOrderList()
     },
     // 改变页数时触发
     handleCurrentChange(newPage) {
+      this.loading = true
       this.queryInfo.pagenum = newPage
       this.getOrderList()
     },

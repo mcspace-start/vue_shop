@@ -42,7 +42,8 @@ import {
   CheckboxGroup,
   Upload,
   Timeline,
-  TimelineItem
+  TimelineItem,
+  Loading
 } from 'element-ui'
 
 // Vue.use(Element)
@@ -84,6 +85,7 @@ Vue.use(CheckboxGroup)
 Vue.use(Upload)
 Vue.use(Timeline)
 Vue.use(TimelineItem)
+Vue.use(Loading)
 
 // 在vue全局实例内定义 $message 挂载element Message组件
 Vue.prototype.$message = Message

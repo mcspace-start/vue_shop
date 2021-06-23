@@ -13,7 +13,7 @@
         >添加角色</el-button
       >
       <!-- 角色列表区 -->
-      <el-table :data="roleList" border stripe>
+      <el-table :data="roleList" border stripe v-loading="loading">
         <!-- 展开列 -->
         <el-table-column type="expand">
           <template slot-scope="scope">
@@ -229,7 +229,8 @@ export default {
       // 默认选中的节点 id 值
       defKeys: [],
       // 当前即将分配角色的 id 用于分配角色
-      roleId: ''
+      roleId: '',
+      loading: true
     }
   },
   created() {
@@ -245,6 +246,7 @@ export default {
       }
       // 成功获取列表
       this.roleList = res.data
+      this.loading = false
     },
     // 关闭添加角色对话框
     addDialogClosed() {

@@ -18,6 +18,9 @@
         :closable="false"
       >
       </el-alert>
+      <el-button class="back" icon="el-icon-arrow-left" round @click="goGoods"
+        >返回</el-button
+      >
       <!-- 步骤条区 -->
       <!-- 将字符串转换为数字 -0 操作 -->
       <el-steps
@@ -349,6 +352,10 @@ export default {
         // 跳转路由
         this.$router.push('/goods')
       })
+    },
+    // 返回到goods界面
+    goGoods() {
+      this.$router.push('/goods')
     }
   }
 }
@@ -362,5 +369,9 @@ export default {
 }
 .btnAdd {
   margin-top: 15px;
+}
+.back {
+  margin: 20px 0 10px 0;
+  font-weight: bold;
 }
 </style>

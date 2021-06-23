@@ -31,7 +31,7 @@
         </el-col>
       </el-row>
       <!-- 用户列表区 -->
-      <el-table :data="userList" border stripe>
+      <el-table :data="userList" border stripe v-loading="loading">
         <el-table-column label="#" type="index"></el-table-column>
         <el-table-column label="姓名" prop="username"></el-table-column>
         <el-table-column label="邮箱" prop="email"></el-table-column>
@@ -274,7 +274,8 @@ export default {
       // 所有角色的数据列表
       rolesList: [],
       // 选中分配的角色的id值
-      selectedRoleid: ''
+      selectedRoleid: '',
+      loading: true
     }
   },
   created() {
@@ -293,6 +294,7 @@ export default {
       // 成功赋值
       this.userList = res.data.users
       this.total = res.data.total
+      this.loading = false
     },
     // 监听 pagesize  改变事件
     handleSizeChange(newSize) {

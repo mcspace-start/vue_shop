@@ -8,7 +8,7 @@
     </el-breadcrumb>
     <!-- 卡片视图区 -->
     <el-card>
-      <el-table :data="rightsList" border stripe>
+      <el-table :data="rightsList" border stripe v-loading="loading">
         <el-table-column label="#" type="index"></el-table-column>
         <el-table-column label="权限名称" prop="authName"></el-table-column>
         <el-table-column label="路径" prop="path"></el-table-column>
@@ -31,7 +31,8 @@ export default {
   data() {
     return {
       // 权限列表
-      rightsList: []
+      rightsList: [],
+      loading: true
     }
   },
   created() {
@@ -47,6 +48,7 @@ export default {
       }
       // 成功获取列表
       this.rightsList = res.data
+      this.loading = false
     }
   }
 }

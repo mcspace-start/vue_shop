@@ -28,6 +28,7 @@
         index-text="#"
         border
         :show-row-hover="false"
+        v-loading="loading"
       >
         <!-- 自定义模板列  -->
         <!-- 是否有效 -->
@@ -234,7 +235,8 @@ export default {
           message: '请输入分类名称',
           trigger: 'blur'
         }
-      }
+      },
+      loading: true
     }
   },
   created() {
@@ -254,14 +256,17 @@ export default {
       this.cateList = res.data.result
       // 数据总条数复制到 data
       this.total = res.data.total
+      this.loading = false
     },
     // 监听 pagesize 改变事件
     handleSizeChange(newSize) {
+      this.loading = true
       this.queryInfo.pagesize = newSize
       this.getCateList()
     },
     // 监听 pagenum 的改变
     handleCurrentChange(newPage) {
+      this.loading = true
       this.queryInfo.pagenum = newPage
       this.getCateList()
     },
