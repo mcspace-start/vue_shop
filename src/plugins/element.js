@@ -3,46 +3,46 @@ import 'element-ui/lib/theme-chalk/index.css'
 
 // import Element from 'element-ui'
 import {
-    Form,
-    FormItem,
-    Input,
-    Button,
-    Message,
-    Container,
-    Aside,
-    Header,
-    Main,
-    Menu,
-    MenuItem,
-    Submenu,
-    MenuItemGroup,
-    Breadcrumb,
-    BreadcrumbItem,
-    Card,
-    Row,
-    Col,
-    Table,
-    TableColumn,
-    Switch,
-    Tooltip,
-    Pagination,
-    Dialog,
-    MessageBox,
-    Tag,
-    Tree,
-    Select,
-    Option,
-    Cascader,
-    Alert,
-    Tabs,
-    TabPane,
-    Steps,
-    Step,
-    Checkbox,
-    CheckboxGroup,
-    Upload,
-    Timeline,
-    TimelineItem
+  Form,
+  FormItem,
+  Input,
+  Button,
+  Message,
+  Container,
+  Aside,
+  Header,
+  Main,
+  Menu,
+  MenuItem,
+  Submenu,
+  MenuItemGroup,
+  Breadcrumb,
+  BreadcrumbItem,
+  Card,
+  Row,
+  Col,
+  Table,
+  TableColumn,
+  Switch,
+  Tooltip,
+  Pagination,
+  Dialog,
+  MessageBox,
+  Tag,
+  Tree,
+  Select,
+  Option,
+  Cascader,
+  Alert,
+  Tabs,
+  TabPane,
+  Steps,
+  Step,
+  Checkbox,
+  CheckboxGroup,
+  Upload,
+  Timeline,
+  TimelineItem
 } from 'element-ui'
 
 // Vue.use(Element)
@@ -85,8 +85,7 @@ Vue.use(Upload)
 Vue.use(Timeline)
 Vue.use(TimelineItem)
 
-
 // 在vue全局实例内定义 $message 挂载element Message组件
 Vue.prototype.$message = Message
-//在vue全局实例内定义 $confirm 挂载element MessageBox组件
+// 在vue全局实例内定义 $confirm 挂载element MessageBox组件
 Vue.prototype.$confirm = MessageBox.confirm

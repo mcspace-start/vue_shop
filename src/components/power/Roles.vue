@@ -178,16 +178,16 @@ export default {
   name: 'rights',
   data() {
     return {
-      //角色列表
+      // 角色列表
       roleList: [],
       // 添加角色对话框
       addDialogVisible: false,
-      //添加角色列表
+      // 添加角色列表
       addRoleForm: {
         roleName: '',
         roleDesc: ''
       },
-      //添加角色列表规则
+      // 添加角色列表规则
       addRoleRules: {
         roleName: [
           { required: true, message: '请输入角色名称', trigger: 'blur' },
@@ -198,15 +198,15 @@ export default {
           { min: 4, max: 15, message: '长度在 4 到 15 个字符', trigger: 'blur' }
         ]
       },
-      //编辑角色对话框
+      // 编辑角色对话框
       editDialogVisible: false,
-      //修改角色信息提交内容对象
+      // 修改角色信息提交内容对象
       editRoleForm: {
         id: 0,
         roleName: '',
         roleDesc: ''
       },
-      //修改角色信息提交验证
+      // 修改角色信息提交验证
       editRoleRules: {
         roleName: [
           { required: true, message: '请输入角色名称', trigger: 'blur' },
@@ -217,69 +217,72 @@ export default {
           { min: 4, max: 25, message: '长度在 4 到 25 个字符', trigger: 'blur' }
         ]
       },
-      //是否显示权限分配对话框
+      // 是否显示权限分配对话框
       setRightDialogVisible: false,
-      //所有权限的数据
+      // 所有权限的数据
       rightsList: [],
-      //树形控件属性绑定对象，对应树形控件生成规则
+      // 树形控件属性绑定对象，对应树形控件生成规则
       treeProps: {
         label: 'authName',
         children: 'children'
       },
-      //默认选中的节点 id 值
+      // 默认选中的节点 id 值
       defKeys: [],
-      //当前即将分配角色的 id 用于分配角色
+      // 当前即将分配角色的 id 用于分配角色
       roleId: ''
     }
   },
   created() {
-    //首次获得所有角色列表
+    // 首次获得所有角色列表
     this.getRoleList()
   },
   methods: {
-    //获取所有角色列表
+    // 获取所有角色列表
     async getRoleList() {
       const { data: res } = await this.$http.get('roles')
-      if (res.meta.status !== 200)
+      if (res.meta.status !== 200) {
         return this.$message.error('获取角色列表失败')
-      //成功获取列表
+      }
+      // 成功获取列表
       this.roleList = res.data
     },
-    //关闭添加角色对话框
+    // 关闭添加角色对话框
     addDialogClosed() {
       this.$refs.addRoleFormRef.resetFields()
     },
-    //添加角色信息提交
+    // 添加角色信息提交
     addRoleInfo() {
       // 发起添加角色信息请求
       this.$refs.addRoleFormRef.validate(async valid => {
         if (!valid) return
         const { data: res } = await this.$http.post('roles', this.addRoleForm)
-        if (res.meta.status !== 201)
+        if (res.meta.status !== 201) {
           return this.$message.error('创建角色失败！')
+        }
         this.$message.success('创建角色成功！')
         // 刷新列表和关闭对话框
         this.getRoleList()
         this.addDialogVisible = false
       })
     },
-    //关闭修改角色信息对话框
+    // 关闭修改角色信息对话框
     editDialogClosed() {
       this.$refs.editRoleFormRef.resetFields()
     },
-    //根据id查询当前角色信息
+    // 根据id查询当前角色信息
     async showEditDialog(id) {
       // 打开对话框
       this.editDialogVisible = true
       //   发起根据id查询当前角色信息的请求
       const { data: res } = await this.$http.get('roles/' + id)
-      if (res.meta.status !== 200)
+      if (res.meta.status !== 200) {
         return this.$message.error('查询角色信息失败！')
+      }
       this.editRoleForm = res.data
     },
-    //编辑角色信息提交
+    // 编辑角色信息提交
     editRoleInfo() {
-      //发起编辑角色请求
+      // 发起编辑角色请求
       this.$refs.editRoleFormRef.validate(async valid => {
         if (!valid) return
         const { data: res } = await this.$http.put(
@@ -289,8 +292,9 @@ export default {
             roleDesc: this.editRoleForm.roleDesc
           }
         )
-        if (res.meta.status !== 200)
+        if (res.meta.status !== 200) {
           return this.$message.error('修改角色信息失败！')
+        }
         this.$message.success('修改角色信息成功！')
         // 刷新列表
         this.getRoleList()
@@ -298,9 +302,9 @@ export default {
         this.editDialogVisible = false
       })
     },
-    //根据 id 删除角色
+    // 根据 id 删除角色
     async removeRoleById(id) {
-      //弹出警示
+      // 弹出警示
       const confirmResult = await this.$confirm(
         '此操作将永久删除该角色, 是否继续?',
         '提示',
@@ -310,19 +314,20 @@ export default {
           type: 'warning'
         }
       ).catch(err => err)
-      //判断是否取消删除操作
-      if (confirmResult !== 'confirm')
+      // 判断是否取消删除操作
+      if (confirmResult !== 'confirm') {
         return this.$message.info('取消删除操作！')
+      }
 
       const { data: res } = await this.$http.delete('roles/' + id)
       if (res.meta.status !== 200) return this.$message.error('删除失败！')
       this.$message.success('删除成功！')
-      //删除后重新获取列表
+      // 删除后重新获取列表
       this.getRoleList()
     },
-    //根据 id 删除对应权限
+    // 根据 id 删除对应权限
     async removeRightById(role, rightId) {
-      //弹框提示用户是否删除
+      // 弹框提示用户是否删除
       const confirmResult = await this.$confirm(
         '此操作将永久删除该权限, 是否继续?',
         '提示',
@@ -341,25 +346,25 @@ export default {
       if (res.meta.status !== 200) return this.$message.error('删除权限失败')
 
       // this.getRoleList()
-      //只渲染局部而不是所有数据
+      // 只渲染局部而不是所有数据
       role.children = res.data
     },
-    //展示分配权限对话框
+    // 展示分配权限对话框
     async showSetRightDialog(role) {
       this.roleId = role.id
-      //获取权限的数据
+      // 获取权限的数据
       const { data: res } = await this.$http.get('rights/tree')
 
       if (res.meta.status !== 200) return this.$message.error('获取权限失败！')
-      //把获取到的数据保存到 data 中
+      // 把获取到的数据保存到 data 中
       this.rightsList = res.data
-      //递归获取三级节点的 id
+      // 递归获取三级节点的 id
       this.getLeafKeys(role, this.defKeys)
       this.setRightDialogVisible = true
     },
-    //通过递归的形式，获取角色下所有的三级节点 id
+    // 通过递归的形式，获取角色下所有的三级节点 id
     getLeafKeys(node, arr) {
-      //如果当前节点不包含 children 的属性则是三级节点
+      // 如果当前节点不包含 children 的属性则是三级节点
       if (!node.children) {
         return arr.push(node.id)
       }
@@ -368,21 +373,21 @@ export default {
         this.getLeafKeys(item, arr)
       })
     },
-    //监听分配权限对话框的关闭事件
+    // 监听分配权限对话框的关闭事件
     setRightDialogClosed() {
       this.defKeys = []
     },
-    //点击为角色分配权限
+    // 点击为角色分配权限
     async allotRights() {
       const keys = [
-        //获取已选节点 id 数组进行展开
+        // 获取已选节点 id 数组进行展开
         ...this.$refs.treeRef.getCheckedKeys(),
-        //获取半选节点 id 数组展开
+        // 获取半选节点 id 数组展开
         ...this.$refs.treeRef.getHalfCheckedKeys()
       ]
-      //对数组进行拼接
+      // 对数组进行拼接
       const idStr = keys.join(',')
-      //发起权限分配请求
+      // 发起权限分配请求
       const { data: res } = await this.$http.post(
         `roles/${this.roleId}/rights`,
         {
@@ -394,7 +399,7 @@ export default {
 
       this.$message.success('分配权限成功！')
 
-      //刷新列表级更新数据
+      // 刷新列表级更新数据
       this.getRoleList()
       this.setRightDialogVisible = false
     }

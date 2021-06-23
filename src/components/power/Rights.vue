@@ -30,23 +30,23 @@ export default {
   name: 'rights',
   data() {
     return {
-      //权限列表
+      // 权限列表
       rightsList: []
     }
   },
   created() {
-    //首次所有权限列表
+    // 首次所有权限列表
     this.getRightsList()
   },
   methods: {
-    //获取所有权限列表
+    // 获取所有权限列表
     async getRightsList() {
       const { data: res } = await this.$http.get('rights/list')
-      if (res.meta.status !== 200)
+      if (res.meta.status !== 200) {
         return this.$message.error('获取权限列表失败')
-      //成功获取列表
+      }
+      // 成功获取列表
       this.rightsList = res.data
-      console.log(res)
     }
   }
 }

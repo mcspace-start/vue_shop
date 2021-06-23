@@ -150,17 +150,17 @@ export default {
   name: 'cate',
   data() {
     return {
-      //查询条件
+      // 查询条件
       queryInfo: {
         type: 3,
         pagenum: 1,
         pagesize: 5
       },
-      //商品分类数据，默认为空
+      // 商品分类数据，默认为空
       cateList: [],
-      //总数据条数
+      // 总数据条数
       total: 0,
-      //为 table 定义列
+      // 为 table 定义列
       columns: [
         {
           label: '分类名称',
@@ -168,38 +168,38 @@ export default {
         },
         {
           label: '是否有效',
-          //表示将当前列定义为模板列
+          // 表示将当前列定义为模板列
           type: 'template',
-          //表示当前这列使用的名称
+          // 表示当前这列使用的名称
           template: 'isOk'
         },
         {
           label: '排序',
-          //表示将当前列定义为模板列
+          // 表示将当前列定义为模板列
           type: 'template',
-          //表示当前这列使用的名称
+          // 表示当前这列使用的名称
           template: 'order'
         },
         {
           label: '操作',
-          //表示将当前列定义为模板列
+          // 表示将当前列定义为模板列
           type: 'template',
-          //表示当前这列使用的名称
+          // 表示当前这列使用的名称
           template: 'opt'
         }
       ],
-      //添加分类对话框的显示与隐藏
+      // 添加分类对话框的显示与隐藏
       addCateDialogVisible: false,
-      //添加分类表单数据对象
+      // 添加分类表单数据对象
       addCateForm: {
-        //将要添加分类的名称
+        // 将要添加分类的名称
         cat_name: '',
-        //父级分类的 id
+        // 父级分类的 id
         cat_pid: 0,
-        //分类的等级，默认要添加的是1级分类
+        // 分类的等级，默认要添加的是1级分类
         cat_level: 0
       },
-      //添加分类表单验证
+      // 添加分类表单验证
       addCateRules: {
         cat_name: [
           {
@@ -209,25 +209,25 @@ export default {
           }
         ]
       },
-      //父级分类的列表
+      // 父级分类的列表
       parentCateList: [],
-      //指定级联选择器的配置对象
+      // 指定级联选择器的配置对象
       cascaderProps: {
-        //展开方式
+        // 展开方式
         expandTrigger: 'hover',
-        //可以选择任意级联项
+        // 可以选择任意级联项
         checkStrictly: true,
         label: 'cat_name',
         value: 'cat_id',
         children: 'children'
       },
-      //级联选择器选中父级分类的id数组
+      // 级联选择器选中父级分类的id数组
       selectedKeys: [],
-      //编辑分类对话框显示与隐藏
+      // 编辑分类对话框显示与隐藏
       editCateDialogVisible: false,
-      //编辑分类数据绑定表单
+      // 编辑分类数据绑定表单
       editCateForm: {},
-      //编辑分类表单数据验证
+      // 编辑分类表单数据验证
       editCateRules: {
         cat_name: {
           required: true,
@@ -241,69 +241,70 @@ export default {
     this.getCateList()
   },
   methods: {
-    //获取商品分类数据
+    // 获取商品分类数据
     async getCateList() {
       //    发起获取商品分类数据
       const { data: res } = await this.$http.get('categories', {
         params: this.queryInfo
       })
-      if (res.meta.status !== 200)
+      if (res.meta.status !== 200) {
         return this.$message.error('获取商品分类失败！')
-      //把数据列表复制到 data 里面
+      }
+      // 把数据列表复制到 data 里面
       this.cateList = res.data.result
-      //数据总条数复制到 data
+      // 数据总条数复制到 data
       this.total = res.data.total
     },
-    //监听 pagesize 改变事件
+    // 监听 pagesize 改变事件
     handleSizeChange(newSize) {
       this.queryInfo.pagesize = newSize
       this.getCateList()
     },
-    //监听 pagenum 的改变
+    // 监听 pagenum 的改变
     handleCurrentChange(newPage) {
       this.queryInfo.pagenum = newPage
       this.getCateList()
     },
-    //点击按钮展示添加分类对话框
+    // 点击按钮展示添加分类对话框
     showAddCateDialog() {
-      //先获取父级分类数据
+      // 先获取父级分类数据
       this.getParentCateList()
       this.addCateDialogVisible = true
     },
-    //获取父级分类数据的列表
+    // 获取父级分类数据的列表
     async getParentCateList() {
       const { data: res } = await this.$http.get('categories', {
         params: { type: 2 }
       })
 
-      if (res.meta.status !== 200)
+      if (res.meta.status !== 200) {
         return this.$message.error('获取父级分类数据失败！')
+      }
 
       this.parentCateList = res.data
     },
-    //级联选择器方式变化时触发
+    // 级联选择器方式变化时触发
     parentCateChange() {
-      //无选中父级分类时则是一级分类
+      // 无选中父级分类时则是一级分类
 
-      //如果有选中则 selectedkeys 的长度不为零
+      // 如果有选中则 selectedkeys 的长度不为零
       if (this.selectedKeys.length > 0) {
-        //父级分类的 id 取等级最低那一位
+        // 父级分类的 id 取等级最低那一位
         this.addCateForm.cat_pid = this.selectedKeys[
           this.selectedKeys.length - 1
         ]
-        //为当前分类等级赋值，登记刚好为数组length
+        // 为当前分类等级赋值，登记刚好为数组length
         this.addCateForm.cat_level = this.selectedKeys.length
-        return
       } else {
-        //父级分类的 id
+        // 父级分类的 id
         this.addCateForm.cat_pid = 0
-        //为当前分类等级赋值
+        // 为当前分类等级赋值
         this.addCateForm.cat_level = 0
       }
     },
-    //点击按钮添加新的分类
+    // 点击按钮添加新的分类
     addCate() {
-      //验证并发送请求
+      // 验证并发送请求
       this.$refs.addCateFormRef.validate(async valid => {
         if (!valid) return
         const { data: res } = await this.$http.post(
@@ -311,30 +312,31 @@ export default {
           this.addCateForm
         )
 
-        if (res.meta.status !== 201)
+        if (res.meta.status !== 201) {
           return this.$message.error('添加分类失败！')
+        }
 
         this.$message.success('添加分类成功！')
-        //刷新数据列表
+        // 刷新数据列表
         this.getCateList()
-        //隐藏对话框
+        // 隐藏对话框
         this.addCateDialogVisible = false
       })
     },
-    //添加分类对话框关闭事件，关闭清空表单
+    // 添加分类对话框关闭事件，关闭清空表单
     addCateDialogClosed() {
-      //重置验证表单
+      // 重置验证表单
       this.$refs.addCateFormRef.resetFields()
-      //重置选中的父级分类对象
+      // 重置选中的父级分类对象
       this.selectedKeys = []
-      //重置 pid 和 level
+      // 重置 pid 和 level
       this.addCateForm.cat_level = 0
       this.addCateForm.cat_pid = 0
     },
-    //打开编辑分类对话框
+    // 打开编辑分类对话框
     async showEditCatDialog(id) {
       this.editCateDialogVisible = true
-      //根据 id 查询分类
+      // 根据 id 查询分类
 
       const { data: res } = await this.$http.get('categories/' + id)
 
@@ -342,36 +344,37 @@ export default {
 
       this.editCateForm = res.data
     },
-    //关闭编辑分类对话框清空验证
+    // 关闭编辑分类对话框清空验证
     editCateDialogClosed() {
       this.$refs.editCateFormRef.resetFields()
       this.editCateForm.cat_id = 0
     },
-    //编辑分类名称
+    // 编辑分类名称
     editCate() {
       this.$refs.editCateFormRef.validate(async valid => {
         if (!valid) return
-        //发起请求
+        // 发起请求
         const { data: res } = await this.$http.put(
           'categories/' + this.editCateForm.cat_id,
           {
-            //携带分类名称
+            // 携带分类名称
             cat_name: this.editCateForm.cat_name
           }
         )
 
-        if (res.meta.status !== 200)
+        if (res.meta.status !== 200) {
           return this.$message.error('更新分类失败！')
+        }
 
         this.$message.success('更新分类成功！')
 
-        //关闭对话框
+        // 关闭对话框
         this.editCateDialogVisible = false
-        //刷新列表
+        // 刷新列表
         this.getCateList()
       })
     },
-    //删除分类
+    // 删除分类
     async removeCate(id) {
       const confirmResult = await this.$confirm(
         '此操作将永久删除该分类, 是否继续?',
@@ -383,11 +386,12 @@ export default {
         }
       ).catch(err => err)
 
-      if (confirmResult !== 'confirm')
+      if (confirmResult !== 'confirm') {
         return this.$message({
           type: 'info',
           message: '已取消删除'
         })
+      }
 
       const { data: res } = await this.$http.delete('categories/' + id)
       if (res.meta.status !== 200) return this.$message.error('删除失败！')

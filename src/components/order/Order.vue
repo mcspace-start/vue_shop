@@ -145,24 +145,24 @@ export default {
   name: 'order',
   data() {
     return {
-      //查询对象
+      // 查询对象
       queryInfo: {
         query: '',
         pagenum: 1,
         pagesize: 5
       },
-      //总条数
+      // 总条数
       total: 0,
-      //订单列表数据
+      // 订单列表数据
       orderList: [],
-      //修改地址对话框
+      // 修改地址对话框
       addressVisible: false,
-      //修改地址对话框数据绑定对象
+      // 修改地址对话框数据绑定对象
       addressForm: {
         address1: [],
         address2: ''
       },
-      //修改地址对话框表单验证
+      // 修改地址对话框表单验证
       addressFormRules: {
         address1: [
           { required: true, message: '请选择省市/区', trigger: 'blur' }
@@ -175,11 +175,11 @@ export default {
           }
         ]
       },
-      //导入citydata数据
+      // 导入citydata数据
       cityData,
-      //展示物流进度对话框
+      // 展示物流进度对话框
       progressVisible: false,
-      //物流信息
+      // 物流信息
       progressInfo: [],
       search_id: ''
     }
@@ -188,46 +188,48 @@ export default {
     this.getOrderList()
   },
   methods: {
-    //获取列表数据
+    // 获取列表数据
     async getOrderList() {
       const { data: res } = await this.$http.get('orders', {
         params: this.queryInfo
       })
 
-      if (res.meta.status !== 200)
+      if (res.meta.status !== 200) {
         return this.$message.error('获取订单列表失败！')
+      }
       // 赋值
       this.total = res.data.total
       this.orderList = res.data.goods
     },
-    //改变页码大小时触发
+    // 改变页码大小时触发
     handleSizeChange(newSize) {
       this.queryInfo.pagesize = newSize
       this.getOrderList()
     },
-    //改变页数时触发
+    // 改变页数时触发
     handleCurrentChange(newPage) {
       this.queryInfo.pagenum = newPage
       this.getOrderList()
     },
-    //展示修改地址对话框
+    // 展示修改地址对话框
     showBox(row) {
       this.addressVisible = true
     },
-    //修改地址对话框关闭时清空验证
+    // 修改地址对话框关闭时清空验证
     addressDialogClosed() {
       this.$refs.addressFormRef.resetFields()
     },
-    //显示物流进度对话框
+    // 显示物流进度对话框
     async showProgressBox() {
       // 获取物流数据
       const { data: res } = await this.$http.get('/kuaidi/1106975712662')
 
-      if (res.meta.status !== 200)
+      if (res.meta.status !== 200) {
         return this.$message.error('获取物流信息失败！')
+      }
       // 赋值
       this.progressInfo = res.data
-      //打开对话框
+      // 打开对话框
       this.progressVisible = true
     },
     async queryOrder() {

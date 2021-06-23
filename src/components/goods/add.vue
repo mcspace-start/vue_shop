@@ -137,24 +137,24 @@ export default {
   name: 'add',
   data() {
     return {
-      //激活步骤条
+      // 激活步骤条
       activeIndex: '0',
-      //添加商品表单数据对象
+      // 添加商品表单数据对象
       addForm: {
         goods_name: '',
         goods_price: 0,
         goods_weight: 0,
         goods_number: 0,
-        //商品所属的分类数组
+        // 商品所属的分类数组
         goods_cat: [],
-        //上传的图片的数组
+        // 上传的图片的数组
         pics: [],
-        //商品的详情描述
+        // 商品的详情描述
         goods_introduce: '',
-        //准备提交的商品参数
+        // 准备提交的商品参数
         attrs: []
       },
-      //添加商品表单数据校验规则
+      // 添加商品表单数据校验规则
       addFormRules: {
         goods_name: [
           { required: true, message: '请输入商品名称', trigger: 'blur' }
@@ -176,44 +176,44 @@ export default {
           }
         ]
       },
-      //商品分类数据
+      // 商品分类数据
       catelist: [],
-      //级联选择器配置
+      // 级联选择器配置
       cateProps: {
         label: 'cat_name',
         value: 'cat_id',
         children: 'children',
         expandTrigger: 'hover'
       },
-      //动态参数列表数据
+      // 动态参数列表数据
       manyTableData: [],
-      //静态属性列表数组
+      // 静态属性列表数组
       onlyTableData: [],
-      //上传图片地址
+      // 上传图片地址
       uploadURL: 'https://lianghj.top:8888/api/private/v1/upload',
-      //图片上传组件的headers请求头对象
+      // 图片上传组件的headers请求头对象
       headerObj: {
         Authorization: window.sessionStorage.getItem('token')
       },
-      //上传图片的保存位置
+      // 上传图片的保存位置
       previewPath: '',
-      //图片预览对话框显示与隐藏
+      // 图片预览对话框显示与隐藏
       previewVisible: false
     }
   },
   created() {
-    //获取所有商品分类数据
+    // 获取所有商品分类数据
     this.getCateList()
   },
   computed: {
-    //返回所选分类id
+    // 返回所选分类id
     cateId() {
       if (this.addForm.goods_cat.length === 3) {
         return this.addForm.goods_cat[2]
       }
       return null
     },
-    //对图片地址进行修改，因为接口不是本地的
+    // 对图片地址进行修改，因为接口不是本地的
     truePreviewPath() {
       const str = 'https://lianghj.top:8888'
       const url = str + this.previewPath.substring(21)
@@ -221,32 +221,33 @@ export default {
     }
   },
   methods: {
-    //获取所有商品分类数据
+    // 获取所有商品分类数据
     async getCateList() {
       const { data: res } = await this.$http.get('categories')
 
-      if (res.meta.status !== 200)
+      if (res.meta.status !== 200) {
         return this.$message.error('获取商品分类失败！')
+      }
 
       this.catelist = res.data
     },
-    //级联选择器选中项变化事件
+    // 级联选择器选中项变化事件
     handleChange() {
-      //只允许三级选择
+      // 只允许三级选择
       if (this.addForm.goods_cat.length !== 3) {
         this.addForm.goods_cat = []
       }
     },
-    //切换 tabs标签之前的钩子，进行监控
+    // 切换 tabs标签之前的钩子，进行监控
     beforeTabLeave(activeName, oldActiveName) {
-      if (oldActiveName == '0' && this.addForm.goods_cat.length !== 3) {
+      if (oldActiveName === '0' && this.addForm.goods_cat.length !== 3) {
         this.$message.error('请先选择商品分类！')
         return false
       }
     },
-    //tab标签点击事件
+    // tab标签点击事件
     async tabClicked() {
-      //证明访问的是动态参数面板
+      // 证明访问的是动态参数面板
       if (this.activeIndex === '1') {
         //   发起请求
         const { data: res } = await this.$http.get(
@@ -258,10 +259,11 @@ export default {
           }
         )
 
-        if (res.meta.status !== 200)
+        if (res.meta.status !== 200) {
           return this.$message.error('获取动态参数列表失败！')
+        }
 
-        //将 attr_vals 拆分数组
+        // 将 attr_vals 拆分数组
         res.data.forEach(item => {
           item.attr_vals =
             item.attr_vals.length === 0 ? [] : item.attr_vals.split(' ')
@@ -269,7 +271,7 @@ export default {
         // 赋值
         this.manyTableData = res.data
       } else if (this.activeIndex === '2') {
-        //证明访问的是静态属性面板
+        // 证明访问的是静态属性面板
         const { data: res } = await this.$http.get(
           `categories/${this.cateId}/attributes`,
           {
@@ -277,47 +279,48 @@ export default {
           }
         )
 
-        if (res.meta.status !== 200)
+        if (res.meta.status !== 200) {
           return this.$message.error('获取静态属性列表失败！')
+        }
         // 赋值
         this.onlyTableData = res.data
       }
     },
-    //点击图片时打开，处理图片预览效果
+    // 点击图片时打开，处理图片预览效果
     handlePreview(file) {
       this.previewPath = file.response.data.url
-      //显示图片预览对话框
+      // 显示图片预览对话框
       this.previewVisible = true
     },
-    //删除图片时触发
+    // 删除图片时触发
     handleRemove(file) {
       // 1.获取将要删除的图片临时路径
       const filePath = file.response.data.tmp_path
-      //2.从 pic 数组找到对应的索引值
+      // 2.从 pic 数组找到对应的索引值
       const i = this.addForm.pics.findIndex(x => x.pic === filePath)
-      //3.调用 split 方法从数组中移除信息对象
+      // 3.调用 split 方法从数组中移除信息对象
       this.addForm.pics.splice(i, 1)
     },
-    //监听文件上传成功的事件
+    // 监听文件上传成功的事件
     handleSuccess(response) {
-      //1.拼接得到一个图片信息对象
+      // 1.拼接得到一个图片信息对象
       const picInfo = {
         pic: response.data.tmp_path
       }
-      //2.将图片信息对象，push 到 pics 数组
+      // 2.将图片信息对象，push 到 pics 数组
       this.addForm.pics.push(picInfo)
     },
-    //添加商品
+    // 添加商品
     add() {
       this.$refs.addFormRef.validate(async valid => {
         if (!valid) {
           return this.$message.error('请填写别要的表单项！')
         }
         // 实现添加逻辑
-        //深拷贝 loadsh cloneDeep(obj)
+        // 深拷贝 loadsh cloneDeep(obj)
         const form = _.cloneDeep(this.addForm)
         form.goods_cat = form.goods_cat.join(',')
-        //处理动态参数
+        // 处理动态参数
         this.manyTableData.forEach(item => {
           const newInfo = {
             attr_id: item.attr_id,
@@ -325,7 +328,7 @@ export default {
           }
           this.addForm.attrs.push(newInfo)
         })
-        //处理静态属性
+        // 处理静态属性
         this.onlyTableData.forEach(item => {
           const newInfo = {
             attr_id: item.attr_id,
@@ -338,11 +341,12 @@ export default {
         // 发起请求添加商品
         const { data: res } = await this.$http.post('goods', form)
 
-        if (res.meta.status !== 201)
+        if (res.meta.status !== 201) {
           return this.$message.error('添加商品失败！')
+        }
 
         this.$message.success('添加商品成功！')
-        //跳转路由
+        // 跳转路由
         this.$router.push('/goods')
       })
     }

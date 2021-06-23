@@ -24,6 +24,20 @@
           router
           :default-active="activePath"
         >
+          <el-submenu :index="'feg'" :key="'fegeg'">
+            <template slot="title">
+              <i class="el-icon-star-on"></i>
+              <!-- 文本 -->
+              <span>欢迎光临</span>
+            </template>
+            <el-menu-item :index="'/welcome'" @click="saveNavState('/welcome')">
+              <!-- 图标 -->
+              <i class="el-icon-menu"></i>
+              <!-- 文本 -->
+              <span>welcome</span>
+            </el-menu-item>
+          </el-submenu>
+
           <!-- 一级菜单 -->
           <el-submenu
             :index="item.id + ''"
@@ -67,18 +81,18 @@ export default {
   name: 'login',
   data() {
     return {
-      //左侧菜单数据
+      // 左侧菜单数据
       menuList: [],
       iconsObject: {
-        '125': 'iconfont icon-users',
-        '103': 'iconfont icon-tijikongjian',
-        '101': 'iconfont icon-shangpin',
-        '102': 'iconfont icon-danju',
-        '145': 'iconfont icon-baobiao'
+        125: 'iconfont icon-users',
+        103: 'iconfont icon-tijikongjian',
+        101: 'iconfont icon-shangpin',
+        102: 'iconfont icon-danju',
+        145: 'iconfont icon-baobiao'
       },
-      //是否折叠左边栏
+      // 是否折叠左边栏
       isCollapse: false,
-      //被激活的链接地址
+      // 被激活的链接地址
       activePath: ''
     }
   },
@@ -90,23 +104,23 @@ export default {
     logout() {
       // 清除token
       window.sessionStorage.clear()
-      //跳转至登陆页
+      // 跳转至登陆页
       this.$router.push('/login')
     },
-    //获取左侧菜单数据
+    // 获取左侧菜单数据
     async getMenuList() {
       const { data: res } = await this.$http.get('menus')
       if (res.meta.status !== 200) return this.$message.error(res.msg)
       this.menuList = res.data
     },
-    //切换菜单栏折叠展开
+    // 切换菜单栏折叠展开
     toggleCollapse(activePath) {
       this.isCollapse = !this.isCollapse
     },
-    //保存路由地址
+    // 保存路由地址
     saveNavState(activePath) {
       window.sessionStorage.setItem('activePath', activePath)
-      //切换子页面时更新路由地址
+      // 切换子页面时更新路由地址
       this.activePath = window.sessionStorage.getItem('activePath')
     }
   }
@@ -155,5 +169,12 @@ export default {
   text-align: center;
   letter-spacing: 0.2em;
   cursor: pointer;
+}
+.el-icon-star-on,
+.el-icon-star-on::before {
+  width: 16px !important;
+  height: 16px !important;
+  margin-right: 10px !important;
+  line-height: 16px !important;
 }
 </style>

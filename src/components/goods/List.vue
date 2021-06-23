@@ -94,15 +94,15 @@ export default {
   name: 'list',
   data() {
     return {
-      //查询参数对象
+      // 查询参数对象
       queryInfo: {
         query: '',
         pagenum: 1,
         pagesize: 5
       },
-      //商品里列表
+      // 商品里列表
       goodsList: [],
-      //总列表数
+      // 总列表数
       total: 0
     }
   },
@@ -110,32 +110,33 @@ export default {
     this.getGoodsList()
   },
   methods: {
-    //根据分页获取对应商品列表
+    // 根据分页获取对应商品列表
     async getGoodsList() {
       const { data: res } = await this.$http.get('goods', {
         params: this.queryInfo
       })
 
-      if (res.meta.status !== 200)
+      if (res.meta.status !== 200) {
         return this.$message.error('获取商品里列表失败！')
+      }
 
       // this.$message.success('获取商品里列表成功！')
 
-      //将获取的数据赋值到 data 里
+      // 将获取的数据赋值到 data 里
       this.goodsList = res.data.goods
       this.total = res.data.total
     },
-    //监听页数大小事件，一页显示几条数据
+    // 监听页数大小事件，一页显示几条数据
     handleSizeChange(newSize) {
       this.queryInfo.pagesize = newSize
       this.getGoodsList()
     },
-    //监听页数变化
+    // 监听页数变化
     handleCurrentChange(newPage) {
       this.queryInfo.pagenum = newPage
       this.getGoodsList()
     },
-    //删除商品事件
+    // 删除商品事件
     async removerById(id) {
       // 异步执行代码
       const confirmResult = await this.$confirm(
@@ -164,7 +165,7 @@ export default {
       // 刷新列表
       this.getGoodsList()
     },
-    //跳转到添加商品页事件
+    // 跳转到添加商品页事件
     goAddpage() {
       this.$router.push('/goods/add')
     }
