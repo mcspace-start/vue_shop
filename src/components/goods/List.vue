@@ -6,7 +6,6 @@
       <el-breadcrumb-item>商品管理</el-breadcrumb-item>
       <el-breadcrumb-item>商品列表</el-breadcrumb-item>
     </el-breadcrumb>
-
     <!-- 卡片区 -->
     <el-card>
       <!-- 搜索框及添加区 -->
@@ -34,7 +33,7 @@
         </el-col>
       </el-row>
       <!-- table表格区 -->
-      <el-table :data="goodsList" border stripe>
+      <el-table :data="goodsList" border stripe v-loading="loading">
         <!-- 索引列 -->
         <el-table-column type="index" label="#"></el-table-column>
         <!-- 商品名称 -->
@@ -60,17 +59,34 @@
         <!-- 操作 -->
         <el-table-column label="操作" width="125px">
           <template slot-scope="scope">
-            <el-button
-              type="primary"
-              size="mini"
-              icon="el-icon-edit"
-            ></el-button>
-            <el-button
-              type="danger"
-              size="mini"
-              icon="el-icon-delete"
-              @click="removerById(scope.row.goods_id)"
-            ></el-button>
+            <!-- 编辑 -->
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="编辑商品"
+              placement="top"
+            >
+              <el-button
+                type="primary"
+                size="mini"
+                icon="el-icon-edit"
+                @click="editGoods(scope.row.goods_id)"
+              ></el-button>
+            </el-tooltip>
+            <!-- 删除 -->
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="删除商品"
+              placement="top"
+            >
+              <el-button
+                type="danger"
+                size="mini"
+                icon="el-icon-delete"
+                @click="removerById(scope.row.goods_id)"
+              ></el-button>
+            </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
@@ -103,10 +119,12 @@ export default {
       // 商品里列表
       goodsList: [],
       // 总列表数
-      total: 0
+      total: 0,
+      loading: true
     }
   },
   created() {
+    // 首次获取数据
     this.getGoodsList()
   },
   methods: {
@@ -120,23 +138,27 @@ export default {
         return this.$message.error('获取商品里列表失败！')
       }
 
-      // this.$message.success('获取商品里列表成功！')
-
       // 将获取的数据赋值到 data 里
       this.goodsList = res.data.goods
       this.total = res.data.total
+      this.loading = false
     },
     // 监听页数大小事件，一页显示几条数据
     handleSizeChange(newSize) {
+      this.loading = true
       this.queryInfo.pagesize = newSize
       this.getGoodsList()
     },
     // 监听页数变化
     handleCurrentChange(newPage) {
+      this.loading = true
       this.queryInfo.pagenum = newPage
       this.getGoodsList()
     },
-    // 删除商品事件
+    async editGoods(id) {
+      // var { data: res } = await this.$http.put('goods/' + id, {})
+    },
+    // 删除商品
     async removerById(id) {
       // 异步执行代码
       const confirmResult = await this.$confirm(
@@ -165,8 +187,9 @@ export default {
       // 刷新列表
       this.getGoodsList()
     },
-    // 跳转到添加商品页事件
+    // 跳转到添加商品页
     goAddpage() {
+      // 路由跳转
       this.$router.push('/goods/add')
     }
   }

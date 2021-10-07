@@ -85,11 +85,14 @@ export default {
     },
     // 登录
     login() {
+      console.log('发起登录')
       this.loading = true
       this.$refs.loginFormRef.validate(async valid => {
+        // 校验不通过
         if (!valid) return
+        // 校验通过 发起登录请求
         const { data: res } = await this.$http.post('login', this.loginForm)
-        if (res.meta.status !== 200) return this.$message.success('登录成功')
+        if (res.meta.status !== 200) return this.$message.error('登录失败')
         // 更改按钮样式
         this.loading = false
         this.$message({
@@ -97,8 +100,9 @@ export default {
           message: '登录成功'
         })
         // 将token写入sessionStorage里
-        // this.token = res.data.token;
         window.sessionStorage.setItem('token', res.data.token)
+        // 将欢迎页面激活，写死
+        window.sessionStorage.setItem('activePath', '/welcome')
         // 通过编程式导航进行路由跳转
         this.$router.push('/home')
       })

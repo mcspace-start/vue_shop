@@ -8,7 +8,7 @@ module.exports = {
         .entry('app')
         .clear()
         .add('./src/main-prod.js')
-      // 配置externals 不打包到一起而是在window全局找
+      // 配置externals 不打包到一起而是在 window 全局找
       config.set('externals', {
         vue: 'Vue',
         'vue-router': 'VueRouter',
@@ -18,7 +18,7 @@ module.exports = {
         nprogress: 'NProgress',
         'vue-quill-editor': 'VueQuillEditor'
       })
-      //
+      // 传一个值
       config.plugin('html').tap(args => {
         args[0].isProd = true
         return args

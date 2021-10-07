@@ -1,99 +1,114 @@
 <template>
-  <div>
+  <div class="content-main">
     <!-- 面包屑导航区 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>权限管理</el-breadcrumb-item>
       <el-breadcrumb-item>角色列表</el-breadcrumb-item>
     </el-breadcrumb>
-    <!-- 卡片视图区 -->
-    <el-card>
-      <!-- 添加角色按钮区 -->
-      <el-button type="primary" @click="addDialogVisible = true"
-        >添加角色</el-button
-      >
-      <!-- 角色列表区 -->
-      <el-table :data="roleList" border stripe v-loading="loading">
-        <!-- 展开列 -->
-        <el-table-column type="expand">
-          <template slot-scope="scope">
-            <el-row
-              :class="['bdbottom', i1 === 0 ? 'bdtop' : '', 'vcenter']"
-              v-for="(item1, i1) in scope.row.children"
-              :key="item1.id"
-            >
-              <!-- 渲染一级权限 -->
-              <el-col :span="5">
-                <el-tag @close="removeRightById(scope.row, item1.id)" closable>
-                  {{ item1.authName }}
-                </el-tag>
-                <i class="el-icon-caret-right"></i>
-              </el-col>
-              <!-- 渲染二级和三级权限 -->
-              <el-col :span="19">
-                <!-- 通过 for 嵌套二级权限 -->
-                <el-row
-                  :class="[i2 === 0 ? '' : 'bdtop', 'vcenter']"
-                  v-for="(item2, i2) in item1.children"
-                  :key="item2.id"
-                >
-                  <!-- 二级 -->
-                  <el-col :span="6">
-                    <el-tag
-                      type="success"
-                      @close="removeRightById(scope.row, item2.id)"
-                      closable
-                      >{{ item2.authName }}</el-tag
-                    >
-                    <i class="el-icon-caret-right"></i>
-                  </el-col>
-                  <!-- 三级 -->
-                  <el-col :span="18">
-                    <el-tag
-                      type="warning"
-                      v-for="item3 in item2.children"
-                      :key="item3.id"
-                      @close="removeRightById(scope.row, item3.id)"
-                      closable
-                    >
-                      {{ item3.authName }}
-                    </el-tag>
-                  </el-col>
-                </el-row>
-              </el-col>
-            </el-row>
-          </template>
-        </el-table-column>
-        <!-- 索引列 -->
-        <el-table-column label="#" type="index"></el-table-column>
-        <el-table-column label="角色名称" prop="roleName"></el-table-column>
-        <el-table-column label="角色描述" prop="roleDesc"></el-table-column>
-        <el-table-column label="操作" width="300px">
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="primary"
-              icon="el-icon-edit"
-              @click="showEditDialog(scope.row.id)"
-              >编辑</el-button
-            >
-            <el-button
-              size="mini"
-              type="danger"
-              icon="el-icon-delete"
-              @click="removeRoleById(scope.row.id)"
-              >删除</el-button
-            ><el-button
-              size="mini"
-              type="warning"
-              icon="el-icon-setting"
-              @click="showSetRightDialog(scope.row)"
-              >分配权限</el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-card>
+    <el-scrollbar style="height:96%" class="content-scrollbar">
+      <!-- 卡片视图区 -->
+      <el-card>
+        <!-- 添加角色按钮区 -->
+        <el-button type="primary" @click="addDialogVisible = true"
+          >添加角色</el-button
+        >
+        <!-- 角色列表区 -->
+        <el-table :data="roleList" border stripe v-loading="loading">
+          <!-- 展开列 -->
+          <el-table-column type="expand">
+            <template slot-scope="scope">
+              <!-- class添加border样式 -->
+              <el-row
+                v-for="(item1, i1) in scope.row.children"
+                :class="['bdbottom', i1 === 0 ? 'bdtop' : '', 'vcenter']"
+                :key="item1.id"
+              >
+                <!-- 渲染一级权限 -->
+                <el-col :span="6">
+                  <el-tag
+                    @close="removeRightById(scope.row, item1.id)"
+                    closable
+                  >
+                    {{ item1.authName }}
+                  </el-tag>
+                  <!-- 箭头icon -->
+                  <i class="el-icon-caret-right"></i>
+                </el-col>
+                <!-- 渲染二级和三级权限 -->
+                <el-col :span="18">
+                  <!-- 通过 for 嵌套二级权限  -->
+                  <el-row
+                    :class="[i2 === 0 ? '' : 'bdtop', 'vcenter']"
+                    v-for="(item2, i2) in item1.children"
+                    :key="item2.id"
+                  >
+                    <!-- 二级 -->
+                    <el-col :span="6">
+                      <el-tag
+                        type="success"
+                        @close="removeRightById(scope.row, item2.id)"
+                        closable
+                        >{{ item2.authName }}</el-tag
+                      >
+                      <!-- 箭头 icon -->
+                      <i class="el-icon-caret-right"></i>
+                    </el-col>
+                    <!-- 三级 -->
+                    <el-col :span="18">
+                      <el-tag
+                        type="warning"
+                        v-for="item3 in item2.children"
+                        :key="item3.id"
+                        @close="removeRightById(scope.row, item3.id)"
+                        closable
+                      >
+                        {{ item3.authName }}
+                      </el-tag>
+                    </el-col>
+                  </el-row>
+                </el-col>
+              </el-row>
+            </template>
+          </el-table-column>
+          <!-- 索引列 -->
+          <el-table-column label="#" type="index"></el-table-column>
+          <!-- 内容列 -->
+          <el-table-column label="角色名称" prop="roleName"></el-table-column>
+          <el-table-column label="角色描述" prop="roleDesc"></el-table-column>
+          <!-- 操作列 -->
+          <el-table-column label="操作" width="300px">
+            <!-- 自定义模板 改为按钮操作 -->
+            <template slot-scope="scope">
+              <!-- 编辑 -->
+              <el-button
+                size="mini"
+                type="primary"
+                icon="el-icon-edit"
+                @click="showEditDialog(scope.row.id)"
+                >编辑</el-button
+              >
+              <!-- 删除 -->
+              <el-button
+                size="mini"
+                type="danger"
+                icon="el-icon-delete"
+                @click="removeRoleById(scope.row.id)"
+                >删除</el-button
+              >
+              <!-- 分配权限 -->
+              <el-button
+                size="mini"
+                type="warning"
+                icon="el-icon-setting"
+                @click="showSetRightDialog(scope.row)"
+                >分配权限</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
+    </el-scrollbar>
     <!-- 添加角色对话框 -->
     <el-dialog
       title="添加角色"
@@ -153,6 +168,7 @@
       title="分配权限"
       :visible.sync="setRightDialogVisible"
       width="50%"
+      lock-scroll
       @close="setRightDialogClosed"
     >
       <!-- 树形控件 -->
@@ -182,12 +198,12 @@ export default {
       roleList: [],
       // 添加角色对话框
       addDialogVisible: false,
-      // 添加角色列表
+      // 添加角色列表对象数据
       addRoleForm: {
         roleName: '',
         roleDesc: ''
       },
-      // 添加角色列表规则
+      // 添加角色列表验证规则
       addRoleRules: {
         roleName: [
           { required: true, message: '请输入角色名称', trigger: 'blur' },
@@ -206,7 +222,7 @@ export default {
         roleName: '',
         roleDesc: ''
       },
-      // 修改角色信息提交验证
+      // 修改角色信息校验规则
       editRoleRules: {
         roleName: [
           { required: true, message: '请输入角色名称', trigger: 'blur' },
@@ -228,8 +244,9 @@ export default {
       },
       // 默认选中的节点 id 值
       defKeys: [],
-      // 当前即将分配角色的 id 用于分配角色
+      // 当前即将分配角色的 id 用于分配权限
       roleId: '',
+      // 加载动画
       loading: true
     }
   },
@@ -256,6 +273,7 @@ export default {
     addRoleInfo() {
       // 发起添加角色信息请求
       this.$refs.addRoleFormRef.validate(async valid => {
+        // 校验规则
         if (!valid) return
         const { data: res } = await this.$http.post('roles', this.addRoleForm)
         if (res.meta.status !== 201) {
@@ -267,20 +285,20 @@ export default {
         this.addDialogVisible = false
       })
     },
-    // 关闭修改角色信息对话框
-    editDialogClosed() {
-      this.$refs.editRoleFormRef.resetFields()
-    },
     // 根据id查询当前角色信息
     async showEditDialog(id) {
       // 打开对话框
       this.editDialogVisible = true
-      //   发起根据id查询当前角色信息的请求
+      // 发起根据id查询当前角色信息的请求
       const { data: res } = await this.$http.get('roles/' + id)
       if (res.meta.status !== 200) {
         return this.$message.error('查询角色信息失败！')
       }
       this.editRoleForm = res.data
+    },
+    // 关闭修改角色信息对话框
+    editDialogClosed() {
+      this.$refs.editRoleFormRef.resetFields()
     },
     // 编辑角色信息提交
     editRoleInfo() {
@@ -327,7 +345,7 @@ export default {
       // 删除后重新获取列表
       this.getRoleList()
     },
-    // 根据 id 删除对应权限
+    // 展开列根据 id 删除对应权限
     async removeRightById(role, rightId) {
       // 弹框提示用户是否删除
       const confirmResult = await this.$confirm(
@@ -348,7 +366,7 @@ export default {
       if (res.meta.status !== 200) return this.$message.error('删除权限失败')
 
       // this.getRoleList()
-      // 只渲染局部而不是所有数据
+      // 只渲染局部而不是所有数据 不需要getRoleList
       role.children = res.data
     },
     // 展示分配权限对话框
@@ -358,9 +376,9 @@ export default {
       const { data: res } = await this.$http.get('rights/tree')
 
       if (res.meta.status !== 200) return this.$message.error('获取权限失败！')
-      // 把获取到的数据保存到 data 中
+      // 获取全部权限列表信息
       this.rightsList = res.data
-      // 递归获取三级节点的 id
+      // 递归获取三级节点的 id role 包含已选中节点 不包含未选中节点
       this.getLeafKeys(role, this.defKeys)
       this.setRightDialogVisible = true
     },

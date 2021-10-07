@@ -1,7 +1,7 @@
 import Vue from 'vue'
-import 'element-ui/lib/theme-chalk/index.css'
+// import ElementUI from 'element-ui';            // 改为按需使用
 
-// import Element from 'element-ui'
+// 按需导入 在dev下生效
 import {
   Form,
   FormItem,
@@ -43,7 +43,9 @@ import {
   Upload,
   Timeline,
   TimelineItem,
-  Loading
+  Loading,
+  Link,
+  Scrollbar
 } from 'element-ui'
 
 // Vue.use(Element)
@@ -86,6 +88,8 @@ Vue.use(Upload)
 Vue.use(Timeline)
 Vue.use(TimelineItem)
 Vue.use(Loading)
+Vue.use(Link)
+Vue.use(Scrollbar)
 
 // 在vue全局实例内定义 $message 挂载element Message组件
 Vue.prototype.$message = Message

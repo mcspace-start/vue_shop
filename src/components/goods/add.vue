@@ -6,10 +6,9 @@
       <el-breadcrumb-item>商品管理</el-breadcrumb-item>
       <el-breadcrumb-item>添加商品</el-breadcrumb-item>
     </el-breadcrumb>
-
     <!-- 卡片区 -->
     <el-card>
-      <!-- 提示区 -->
+      <!-- 顶部提示条 -->
       <el-alert
         title="添加商品信息"
         type="info"
@@ -18,17 +17,13 @@
         :closable="false"
       >
       </el-alert>
+      <!-- 返回按钮 -->
       <el-button class="back" icon="el-icon-arrow-left" round @click="goGoods"
         >返回</el-button
       >
       <!-- 步骤条区 -->
-      <!-- 将字符串转换为数字 -0 操作 -->
-      <el-steps
-        :space="200"
-        :active="activeIndex - 0"
-        finish-status="success"
-        align-center
-      >
+      <!-- 换为数字 -0 操作 字符串方便用于 tab-pane 组件所以要转换一下 -->
+      <el-steps :active="activeIndex - 0" finish-status="success" align-center>
         <el-step title="基本信息"></el-step>
         <el-step title="商品参数"></el-step>
         <el-step title="商品属性"></el-step>
@@ -58,7 +53,7 @@
             <el-form-item label="商品价格" prop="goods_price">
               <el-input v-model="addForm.goods_price" type="number"></el-input>
             </el-form-item>
-            <el-form-item label="商品重量" prop="goods_weight">
+            <el-form-item label="商品重量(g)" prop="goods_weight">
               <el-input v-model="addForm.goods_weight" type="number"></el-input>
             </el-form-item>
             <el-form-item label="商品数量" prop="goods_number">
@@ -81,14 +76,15 @@
               v-for="item in manyTableData"
               :label="item.attr_name"
               :key="item.attr_id"
+              class="manyItem"
             >
               <!-- 复选框组 -->
               <el-checkbox-group v-model="item.attr_vals">
                 <!-- 循环生成选项 -->
                 <el-checkbox
                   border
-                  v-for="(cb, i) in item.attr_vals"
-                  :label="cb"
+                  v-for="(name, i) in item.attr_vals"
+                  :label="name"
                   :key="i"
                 ></el-checkbox>
               </el-checkbox-group>
@@ -106,10 +102,11 @@
           <el-tab-pane label="商品图片" name="3">
             <!-- action 图片要上传到的后台地址 -->
             <el-upload
+              list-type="picture"
+              multiple
               :action="uploadURL"
               :on-preview="handlePreview"
               :on-remove="handleRemove"
-              list-type="picture"
               :headers="headerObj"
               :on-success="handleSuccess"
             >
@@ -121,7 +118,7 @@
             <quill-editor v-model="addForm.goods_introduce" />
             <!-- 添加商按钮 -->
             <el-button type="primary" class="btnAdd" @click="add"
-              >添加商品</el-button
+              >完成提交</el-button
             >
           </el-tab-pane>
         </el-tabs>
@@ -140,22 +137,26 @@ export default {
   name: 'add',
   data() {
     return {
-      // 激活步骤条
+      // 激活步骤条 字符串用于tab-pane属性name
       activeIndex: '0',
       // 添加商品表单数据对象
       addForm: {
+        // 商品名称
         goods_name: '',
+        // 商品价格
         goods_price: 0,
+        // 商品重量
         goods_weight: 0,
+        // 商品数量
         goods_number: 0,
         // 商品所属的分类数组
         goods_cat: [],
         // 上传的图片的数组
         pics: [],
-        // 商品的详情描述
-        goods_introduce: '',
         // 准备提交的商品参数
-        attrs: []
+        attrs: [],
+        // 商品的详情描述(商品内容)
+        goods_introduce: ''
       },
       // 添加商品表单数据校验规则
       addFormRules: {
@@ -163,32 +164,45 @@ export default {
           { required: true, message: '请输入商品名称', trigger: 'blur' }
         ],
         goods_price: [
-          { required: true, message: '请输入商品价格', trigger: 'blur' }
-        ],
-        goods_weight: [
-          { required: true, message: '请输入商品重量', trigger: 'blur' }
-        ],
-        goods_number: [
-          { required: true, message: '请输入商品数量', trigger: 'blur' }
-        ],
-        goods_cat: [
+          { required: true, message: '请输入商品价格', trigger: 'blur' },
           {
-            required: true,
-            message: '请选择商品分类',
+            pattern: /^[1-9]\d*$/,
+            message: '价格必须大于0',
             trigger: 'blur'
           }
+        ],
+        goods_weight: [
+          { required: true, message: '请输入商品重量', trigger: 'blur' },
+          {
+            pattern: /^[1-9]\d*$/,
+            message: '重量必须大于0',
+            trigger: 'blur'
+          }
+        ],
+        goods_number: [
+          { required: true, message: '请输入商品数量', trigger: 'blur' },
+          {
+            pattern: /^[1-9]\d*$/,
+            message: '数量必须大于0',
+            trigger: 'blur'
+          }
+        ],
+        goods_cat: [
+          // change 改变时验证
+          { required: true, message: '请选择商品分类', trigger: 'change' }
         ]
       },
-      // 商品分类数据
+      // 商品分类数据，用于级联选择器
       catelist: [],
       // 级联选择器配置
       cateProps: {
         label: 'cat_name',
         value: 'cat_id',
         children: 'children',
+        // 展开状态方式为 hover
         expandTrigger: 'hover'
       },
-      // 动态参数列表数据
+      // 动态参数列表数据，数组对象通过多选框改变值
       manyTableData: [],
       // 静态属性列表数组
       onlyTableData: [],
@@ -196,6 +210,7 @@ export default {
       uploadURL: 'https://lianghj.top:8888/api/private/v1/upload',
       // 图片上传组件的headers请求头对象
       headerObj: {
+        // 配置token
         Authorization: window.sessionStorage.getItem('token')
       },
       // 上传图片的保存位置
@@ -216,72 +231,81 @@ export default {
       }
       return null
     },
-    // 对图片地址进行修改，因为接口不是本地的
+    // 对图片地址进行修改，因为接口不是本地的,直接请求服务器端图片
     truePreviewPath() {
       const str = 'https://lianghj.top:8888'
+      // http://127.0.0.1:8888/tmp_uploads/d64c8a534ba6204e70e2c0b92dae4de5.gif
       const url = str + this.previewPath.substring(21)
       return url
     }
   },
   methods: {
-    // 获取所有商品分类数据
+    // 获取所有商品分类数据，用于级联选择器
     async getCateList() {
       const { data: res } = await this.$http.get('categories')
 
       if (res.meta.status !== 200) {
         return this.$message.error('获取商品分类失败！')
       }
-
       this.catelist = res.data
     },
     // 级联选择器选中项变化事件
     handleChange() {
-      // 只允许三级选择
+      // 只允许选择三级分类
       if (this.addForm.goods_cat.length !== 3) {
+        // 清空
         this.addForm.goods_cat = []
+        return this.$message.error('只允许选择三级标签')
       }
     },
     // 切换 tabs标签之前的钩子，进行监控
     beforeTabLeave(activeName, oldActiveName) {
-      if (oldActiveName === '0' && this.addForm.goods_cat.length !== 3) {
-        this.$message.error('请先选择商品分类！')
-        return false
+      let nextB = true
+      // 完整填写基本信息必填项
+      if (oldActiveName === '0') {
+        this.$refs.addFormRef.validate(valid => {
+          if (!valid) {
+            nextB = false
+            return this.$message.error('请填写基本信息必填项！')
+          }
+          nextB = true
+        })
       }
+      return nextB
+      // return this.$refs.addFormRef.validate()
+      // 直接返回promise对象发现Tabs的绑定值没有及时更新
     },
     // tab标签点击事件
     async tabClicked() {
-      // 证明访问的是动态参数面板
+      // 判断访问的是动态参数或是静态属性
       if (this.activeIndex === '1') {
-        //   发起请求
+        // 动态参数
         const { data: res } = await this.$http.get(
           `categories/${this.cateId}/attributes`,
           {
-            params: {
-              sel: 'many'
-            }
+            params: { sel: 'many' }
           }
         )
-
         if (res.meta.status !== 200) {
           return this.$message.error('获取动态参数列表失败！')
         }
-
-        // 将 attr_vals 拆分数组
+        // 默认 attr_vals 值是字符串，需要拆分为数组进行列表渲染
+        // 将 attr_vals 以空格拆分字符串
         res.data.forEach(item => {
+          // (再将其赋值到本身方便使用)
           item.attr_vals =
             item.attr_vals.length === 0 ? [] : item.attr_vals.split(' ')
         })
         // 赋值
         this.manyTableData = res.data
       } else if (this.activeIndex === '2') {
-        // 证明访问的是静态属性面板
+        // 静态属性
         const { data: res } = await this.$http.get(
           `categories/${this.cateId}/attributes`,
           {
             params: { sel: 'only' }
           }
         )
-
         if (res.meta.status !== 200) {
           return this.$message.error('获取静态属性列表失败！')
         }
@@ -291,6 +315,8 @@ export default {
     },
     // 点击图片时打开，处理图片预览效果
     handlePreview(file) {
+      // 接受一个 file 包含文件详细信息
+      // 临时文件信息；位置，用于打开图片大图使用
       this.previewPath = file.response.data.url
       // 显示图片预览对话框
       this.previewVisible = true
@@ -310,20 +336,22 @@ export default {
       const picInfo = {
         pic: response.data.tmp_path
       }
-      // 2.将图片信息对象，push 到 pics 数组
+      // 2.将图片信息对象，push 到 pics 数组，用于最后发送添加商品请求
       this.addForm.pics.push(picInfo)
     },
     // 添加商品
     add() {
       this.$refs.addFormRef.validate(async valid => {
+        // 表单验证
         if (!valid) {
-          return this.$message.error('请填写别要的表单项！')
+          return this.$message.error('请填写必要的表单项！')
         }
         // 实现添加逻辑
         // 深拷贝 loadsh cloneDeep(obj)
         const form = _.cloneDeep(this.addForm)
+        // 合并数组为字符串，符合提交要求
         form.goods_cat = form.goods_cat.join(',')
-        // 处理动态参数
+        // 处理动态参数，转成符合发送请求格式
         this.manyTableData.forEach(item => {
           const newInfo = {
             attr_id: item.attr_id,
@@ -331,7 +359,7 @@ export default {
           }
           this.addForm.attrs.push(newInfo)
         })
-        // 处理静态属性
+        // 处理静态属性，转成符合发送请求格式
         this.onlyTableData.forEach(item => {
           const newInfo = {
             attr_id: item.attr_id,
@@ -345,9 +373,8 @@ export default {
         const { data: res } = await this.$http.post('goods', form)
 
         if (res.meta.status !== 201) {
-          return this.$message.error('添加商品失败！')
+          return this.$message.error('添加商品失败！' + res.meta.msg)
         }
-
         this.$message.success('添加商品成功！')
         // 跳转路由
         this.$router.push('/goods')
@@ -373,5 +400,10 @@ export default {
 .back {
   margin: 20px 0 10px 0;
   font-weight: bold;
+}
+// 为动态参数 item 添加 border
+.manyItem {
+  border-bottom: 2px dashed #999;
+  padding-bottom: 10px;
 }
 </style>

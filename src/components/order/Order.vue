@@ -20,7 +20,6 @@
           </el-input>
         </el-col>
       </el-row>
-
       <!-- 订单列表数据 -->
       <el-table :data="orderList" border stripe v-loading="loading">
         <!-- 索引列 -->
@@ -42,6 +41,7 @@
         <!-- 是否付款 -->
         <el-table-column label="是否付款" prop="pay_status" width="100px">
           <template slot-scope="scope">
+            <!-- 判断是否付款 -->
             <el-tag v-if="scope.row.pay_status === '1'" type="success"
               >已付款</el-tag
             >
@@ -54,28 +54,44 @@
         <!-- 下单时间 -->
         <el-table-column label="下单时间" prop="create_time" width="180px">
           <template slot-scope="scope">
+            <!-- 过滤器 转换时间戳 -->
             {{ scope.row.create_time | dateFormat }}
           </template>
         </el-table-column>
         <!-- 操作 -->
         <el-table-column label="操作" width="130px">
           <template slot-scope="scope">
-            <el-button
-              type="primary"
-              icon="el-icon-edit"
-              size="mini"
-              @click="showBox(scope.row)"
-            ></el-button>
-            <el-button
-              type="success"
-              icon="el-icon-location"
-              size="mini"
-              @click="showProgressBox"
-            ></el-button>
+            <!-- 修改地址按钮 -->
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="修改地址"
+              placement="top"
+            >
+              <el-button
+                type="primary"
+                icon="el-icon-edit"
+                size="mini"
+                @click="showBox(scope.row)"
+              ></el-button>
+            </el-tooltip>
+            <!-- 物流进度按钮 -->
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="物流进度"
+              placement="top"
+            >
+              <el-button
+                type="success"
+                icon="el-icon-location"
+                size="mini"
+                @click="showProgressBox"
+              ></el-button>
+            </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
-
       <!-- 分页区 -->
       <el-pagination
         @size-change="handleSizeChange"
@@ -104,23 +120,22 @@
         label-width="100px"
         class="demo-ruleForm"
       >
+        <!-- 省市区/县 -->
         <el-form-item label="省市区/县" prop="address1">
           <el-cascader
             :options="cityData"
             v-model="addressForm.address1"
           ></el-cascader>
         </el-form-item>
-
+        <!-- 详细地址 -->
         <el-form-item label="详细地址" prop="address2">
-          <el-input v-model="addressForm.address2"></el-input>
+          <el-input v-model="addressForm.address2" clearable></el-input>
         </el-form-item>
       </el-form>
       <!-- 底部按钮区 -->
       <span slot="footer" class="dialog-footer">
         <el-button @click="addressVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addressVisible = false"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="editAddress()">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 展示物流进度的对话框 -->
@@ -140,6 +155,7 @@
   </div>
 </template>
 <script>
+// 导入外部数据源
 import cityData from './citydata.js'
 export default {
   name: 'order',
@@ -175,7 +191,7 @@ export default {
           }
         ]
       },
-      // 导入citydata数据
+      // 导入citydata数据 简写
       cityData,
       // 展示物流进度对话框
       progressVisible: false,
@@ -202,6 +218,7 @@ export default {
       // 赋值
       this.total = res.data.total
       this.orderList = res.data.goods
+      // 遮罩层
       this.loading = false
     },
     // 改变页码大小时触发
@@ -224,6 +241,11 @@ export default {
     addressDialogClosed() {
       this.$refs.addressFormRef.resetFields()
     },
+    // 修改地址
+    editAddress() {
+      this.addressVisible = false
+      return this.$message.error('未提供修改接口')
+    },
     // 显示物流进度对话框
     async showProgressBox() {
       // 获取物流数据
@@ -237,6 +259,7 @@ export default {
       // 打开对话框
       this.progressVisible = true
     },
+    // 查询订单
     async queryOrder() {
       this.$message.error('未提供查询接口！')
     }

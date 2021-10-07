@@ -11,7 +11,7 @@
       <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
       <div
         id="main"
-        style="width: 650px;height:400px;"
+        style="width: 760px;height:420px;"
         v-loading="loading"
       ></div>
     </el-card>
@@ -25,7 +25,7 @@ export default {
   name: 'report',
   data() {
     return {
-      // 需要合并的数据
+      // echarts数据对象（需要合并的数据）
       options: {
         title: {
           text: '用户来源'
@@ -35,7 +35,7 @@ export default {
           axisPointer: {
             type: 'cross',
             label: {
-              backgroundColor: '#E9EEF3'
+              backgroundColor: '#999'
             }
           }
         },
@@ -64,16 +64,21 @@ export default {
     // 初始化报表
     var myChart = echarts.init(document.getElementById('main'))
     // 准备数据和配置项
-
-    // 3. 基于准备好的dom，初始化echarts实例
-
     const { data: res } = await this.$http.get('reports/type/1')
     if (res.meta.status !== 200) {
       return this.$message.error('获取折线图数据失败!')
     }
-    // 4. 指定图表的配置项和数据
+    console.log(_.cloneDeep(res))
+    // 配置图表数据 (合并数据)
     const result = _.merge(res.data, this.options)
-    // 5. 使用刚指定的配置项和数据显示图表。
+    console.log(result)
+    // 设置hover高亮时其他隐藏
+    result.series.forEach(item => {
+      item.emphasis = {
+        focus: 'series'
+      }
+    })
+    // 5. 使用刚指定的配置项和数据进行渲染
     myChart.setOption(result)
     this.loading = false
   }

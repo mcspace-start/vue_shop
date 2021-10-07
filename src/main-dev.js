@@ -4,12 +4,13 @@ import router from './router'
 
 // 导入全局样式表
 import './assets/css/global.css'
-// 导入elementui插件
-import './plugins/element.js'
 // 导入第三方图标库
 import './assets/fonts/iconfont.css'
 // 导入axios
 import axios from 'axios'
+// 导入elementui插件
+import './plugins/element.js'
+import 'element-ui/lib/theme-chalk/index.css'
 // 导入第三方表格树插件
 import TreeTable from 'vue-table-with-tree-grid'
 // 导入富文本编辑器依赖
@@ -22,24 +23,26 @@ import 'quill/dist/quill.bubble.css' // for bubble theme
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
+// 注册富文本编辑器为全局组件
+Vue.use(VueQuillEditor)
 // 设置axios默认根路径，并开始进度条 NProgress.start()
 axios.defaults.baseURL = 'https://lianghj.top:8888/api/private/v1/'
-// axios对请求头对象挂载自定义段
+// axios对请求头对象挂载自定义段(请求拦截器)
 axios.interceptors.request.use(config => {
   // 展示进度条
   NProgress.start()
-  // 添加Authorization字段
+  // 信息头，添加Authorization字段
   config.headers.Authorization = window.sessionStorage.getItem('token')
   // 后面必须return config
   return config
 })
-// 在 response 拦截器中，隐藏进度条 NProgress.done()
+// 在 response 拦截器中(响应拦截器)，隐藏进度条 NProgress.done()
 axios.interceptors.response.use(config => {
   // 隐藏进度条
   NProgress.done()
   return config
 })
-
+// 关闭vue控制台提示
 Vue.config.productionTip = false
 // 将axios导入到vueprototype里
 Vue.prototype.$http = axios
@@ -50,18 +53,18 @@ Vue.filter('dateFormat', function (originVal) {
   const dt = new Date(originVal)
   // padStart为不足两位数前缀加 0
   const y = dt.getFullYear()
+  // 下标为零需要 +1
   const m = (dt.getMonth() + 1 + '').padStart(2, '0')
+  // padStart 为前置填充 长度为 2
   const d = (dt.getDate() + '').padStart(2, '0')
 
   const hh = (dt.getHours() + '').padStart(2, '0')
   const mm = (dt.getMinutes() + '').padStart(2, '0')
   const ss = (dt.getSeconds() + '').padStart(2, '0')
 
-  // yy-mm-dd hh:mm:ss
+  // 格式：yy-mm-dd hh:mm:ss
   return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
 })
-// 注册富文本编辑器为全局组件
-Vue.use(VueQuillEditor)
 
 new Vue({
   router,

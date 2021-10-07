@@ -1,5 +1,6 @@
 <template>
-  <el-container>
+  <!-- 布局容器 -->
+  <el-container class="main-container">
     <!-- 头部区域 -->
     <el-header>
       <div>
@@ -11,8 +12,14 @@
     <el-container>
       <!-- 侧边栏 -->
       <el-aside :width="isCollapse ? '64px' : '200px'">
-        <!-- 菜单栏收缩 -->
-        <div class="toggle-button" @click="toggleCollapse">|||</div>
+        <!-- 用于菜单栏收缩 -->
+        <div
+          class="toggle-button"
+          @click="toggleCollapse"
+          :title="toggleButtonTitle"
+        >
+          | | |
+        </div>
         <!-- 侧边栏菜单区 -->
         <el-menu
           background-color="#313743"
@@ -24,7 +31,8 @@
           router
           :default-active="activePath"
         >
-          <el-submenu :index="'feg'" :key="'fegeg'">
+          <!-- 欢迎页面 固定写死 -->
+          <el-submenu :index="'x'">
             <template slot="title">
               <i class="el-icon-star-on"></i>
               <!-- 文本 -->
@@ -52,12 +60,14 @@
               <span>{{ item.authName }}</span>
             </template>
             <!-- 二级菜单 -->
+            <!-- 二级菜单的index用于路由跳转 -->
             <el-menu-item
               :index="'/' + subItem.path"
               v-for="subItem in item.children"
               :key="subItem.id"
               @click="saveNavState('/' + subItem.path)"
             >
+              <!-- 二级菜单模板 -->
               <template slot="title">
                 <!-- 图标 -->
                 <i class="el-icon-menu"></i>
@@ -83,6 +93,7 @@ export default {
     return {
       // 左侧菜单数据
       menuList: [],
+      // icon图标
       iconsObject: {
         125: 'iconfont icon-users',
         103: 'iconfont icon-tijikongjian',
@@ -93,11 +104,13 @@ export default {
       // 是否折叠左边栏
       isCollapse: false,
       // 被激活的链接地址
-      activePath: ''
+      activePath: '',
+      toggleButtonTitle: '折叠列表'
     }
   },
   created() {
     this.getMenuList()
+    // 初次获取地址信息
     this.activePath = window.sessionStorage.getItem('activePath')
   },
   methods: {
@@ -114,21 +127,38 @@ export default {
       this.menuList = res.data
     },
     // 切换菜单栏折叠展开
-    toggleCollapse(activePath) {
+    toggleCollapse(el) {
+      if (this.isCollapse) {
+        this.toggleButtonTitle = '折叠列表'
+        el.currentTarget.innerText = '| | |'
+      } else {
+        this.toggleButtonTitle = '展开列表'
+        el.currentTarget.innerText = '|||'
+      }
       this.isCollapse = !this.isCollapse
     },
     // 保存路由地址
     saveNavState(activePath) {
+      // 保存地址信息使用在element的 default-active 属性上
       window.sessionStorage.setItem('activePath', activePath)
       // 切换子页面时更新路由地址
       this.activePath = window.sessionStorage.getItem('activePath')
     }
+  },
+  updated() {
+    // 监控在其他页面或者面包屑跳转时的地址更新
+    this.activePath = window.sessionStorage.getItem('activePath')
   }
 }
 </script>
 <style lang="less" scoped>
-.el-container {
+.main-container {
+  padding: 0;
+  margin: 0;
   height: 100%;
+  > .el-container {
+    height: 0px;
+  }
 }
 .el-header {
   background-color: #363d40;
@@ -138,14 +168,15 @@ export default {
   color: #fff;
   font-size: 20px;
   img {
-    width: 50px;
+    width: 35px;
+    margin-left: 15px;
   }
   > div {
     display: flex;
     align-items: center;
   }
   span {
-    margin-left: 15px;
+    margin-left: 14px;
   }
   align-items: center;
 }
@@ -164,7 +195,7 @@ export default {
 .toggle-button {
   background-color: #4a5064;
   font-size: 10px;
-  line-height: 24px;
+  line-height: 28px;
   color: #fff;
   text-align: center;
   letter-spacing: 0.2em;

@@ -1,36 +1,64 @@
 /* 全局样式表 */
-html,body,#app{
+html,
+body,
+#app {
     height: 100%;
     margin: 0;
     padding: 0;
     min-width: 1266px;
 }
+
 /* 面包屑下边距 */
-.el-breadcrumb{
+.el-breadcrumb {
     margin-bottom: 15px;
     font-size: 12px;
 }
+
 /* 卡片阴影修改 */
-.el-card{
+.el-card {
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important;
 }
+
 /* table 上边距 */
-.el-table{
+.el-table {
     margin-top: 15px;
     font-size: 12px;
 }
+
 /* 分页区域上边距 */
-.el-pagination{
+.el-pagination {
     margin-top: 15px;
 }
+
 /* 步骤条边距 */
-.el-steps{
-    margin:15px 0 ;
+.el-steps {
+    margin: 15px 0;
 }
-.el-step__title{
+
+.el-step__title {
     font-size: 13px !important;
 }
+
 /* 富文本编辑器编辑框高度 */
 .ql-editor {
     min-height: 300px;
+}
+
+/* 清除el-scrollbar x方向滚动条 */
+.content-scrollbar .el-scrollbar__wrap {
+    overflow-x: hidden !important;
+}
+
+/* 作用于使用 element 滚动条组件 */
+.content-main {
+    height: 100%;
+}
+
+/* 避免csdn方式导入样式优先级问题 */
+.el-breadcrumb {
+    font-size: 14px;
+}
+
+.el-table {
+    font-size: 14px;
 }

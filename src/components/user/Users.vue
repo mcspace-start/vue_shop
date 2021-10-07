@@ -17,6 +17,7 @@
             @clear="getUserList"
             clearable
           >
+            <!-- append 使按钮位于输入框后面 -->
             <el-button
               slot="append"
               icon="el-icon-search"
@@ -34,7 +35,11 @@
       <el-table :data="userList" border stripe v-loading="loading">
         <el-table-column label="#" type="index"></el-table-column>
         <el-table-column label="姓名" prop="username"></el-table-column>
-        <el-table-column label="邮箱" prop="email"></el-table-column>
+        <el-table-column
+          label="邮箱"
+          prop="email"
+          width="240px"
+        ></el-table-column>
         <el-table-column label="电话" prop="mobile"></el-table-column>
         <el-table-column label="角色" prop="role_name"></el-table-column>
         <el-table-column label="状态">
@@ -49,19 +54,33 @@
         <el-table-column label="操作" width="180px">
           <template slot-scope="scope">
             <!-- 修改按钮 -->
-            <el-button
-              type="primary"
-              icon="el-icon-edit"
-              size="mini"
-              @click="showEditDialog(scope.row.id)"
-            ></el-button>
+            <el-tooltip
+              effect="dark"
+              content="编辑角色"
+              placement="top"
+              :enterable="false"
+            >
+              <el-button
+                type="primary"
+                icon="el-icon-edit"
+                size="mini"
+                @click="showEditDialog(scope.row.id)"
+              ></el-button>
+            </el-tooltip>
             <!-- 删除按钮 -->
-            <el-button
-              type="danger"
-              icon="el-icon-delete"
-              size="mini"
-              @click="removeUserById(scope.row.id)"
-            ></el-button>
+            <el-tooltip
+              effect="dark"
+              content="删除角色"
+              placement="top"
+              :enterable="false"
+            >
+              <el-button
+                type="danger"
+                icon="el-icon-delete"
+                size="mini"
+                @click="removeUserById(scope.row.id)"
+              ></el-button>
+            </el-tooltip>
             <!-- 分配角色按钮 -->
             <el-tooltip
               effect="dark"
@@ -212,8 +231,9 @@ export default {
       cb(new Error('请输入合法的手机！'))
     }
     return {
-      // 获取用户列表的对象
+      // 获取用户列表的查询参数
       queryInfo: {
+        // 搜索关键字
         query: '',
         // 当前页数
         pagenum: 1,
@@ -275,6 +295,7 @@ export default {
       rolesList: [],
       // 选中分配的角色的id值
       selectedRoleid: '',
+      // 加载动画
       loading: true
     }
   },
@@ -291,7 +312,7 @@ export default {
       if (res.meta.status !== 200) {
         return this.$message.error('获取用户里列表失败！')
       }
-      // 成功赋值
+      // 成功后赋值
       this.userList = res.data.users
       this.total = res.data.total
       this.loading = false
@@ -313,6 +334,7 @@ export default {
         `users/${userinfo.id}/state/${userinfo.mg_state}`
       )
       if (res.meta.status !== 200) {
+        // 还原状态
         userinfo.mg_state = !userinfo.mg_state
         return this.$message.error('状态修改失败！')
       }
@@ -329,8 +351,9 @@ export default {
         // 通过发起请求
         const { data: res } = await this.$http.post('users', this.addForm)
 
-        if (res.meta !== 201) this.$message.error('添加用户失败！')
-
+        if (res.meta.status !== 201) {
+          return this.$message.error('添加用户失败！')
+        }
         this.$message.success('添加用户成功！')
         // 隐藏对话框
         this.addDialogVisible = false
@@ -386,8 +409,7 @@ export default {
           type: 'warning'
         }
       ).catch(err => err)
-      // 如果确认删除，则返回字符串 confirm
-      // 如果取消删除，则返回字符串 confirmcancel
+      // 如果确认删除，则返回字符串 confirm 则返回字符串 confirmcancel
       if (confirmResult !== 'confirm') return this.$message.info('已取消删除')
       // 发起删除请求
       const { data: res } = await this.$http.delete('users/' + id)
@@ -412,6 +434,7 @@ export default {
     },
     // 点击按钮，分配角色
     async saveRoleInfo() {
+      // 判断是否选择了
       if (!this.selectedRoleid) {
         return this.$message.error('请选择要分配的角色！')
       }
