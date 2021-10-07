@@ -27,6 +27,8 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 > 这是一个电商后台管理前端页面，由 **vue-cli4** + **vue2** 构建
 >
 > 项目使用了 **element-ui** 等插件，项目经验来自网上，**API** 也是来着网上
+>
+> 项目[浏览](https://one.aprp.cn/demo/vue-shop/dist/#/login)
 
 ## 使用的插件
 
