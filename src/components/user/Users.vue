@@ -310,6 +310,7 @@ export default {
         params: this.queryInfo
       })
       if (res.meta.status !== 200) {
+        this.loading = false
         return this.$message.error('获取用户里列表失败！')
       }
       // 成功后赋值

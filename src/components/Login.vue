@@ -89,10 +89,16 @@ export default {
       this.loading = true
       this.$refs.loginFormRef.validate(async valid => {
         // 校验不通过
-        if (!valid) return
+        if (!valid) {
+          this.loading = false
+          return
+        }
         // 校验通过 发起登录请求
         const { data: res } = await this.$http.post('login', this.loginForm)
-        if (res.meta.status !== 200) return this.$message.error('登录失败')
+        if (res.meta.status !== 200) {
+          this.loading = false
+          return this.$message.error(`登陆失败！${res.meta.msg}`)
+        }
         // 更改按钮样式
         this.loading = false
         this.$message({

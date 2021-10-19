@@ -213,6 +213,7 @@ export default {
       })
 
       if (res.meta.status !== 200) {
+        this.loading = false
         return this.$message.error('获取订单列表失败！')
       }
       // 赋值

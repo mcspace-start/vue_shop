@@ -269,6 +269,7 @@ export default {
         params: this.queryInfo
       })
       if (res.meta.status !== 200) {
+        this.loading = false
         return this.$message.error('获取商品分类失败！')
       }
       // 把数据列表复制到 data 里面

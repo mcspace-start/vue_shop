@@ -135,6 +135,7 @@ export default {
       })
 
       if (res.meta.status !== 200) {
+        this.loading = false
         return this.$message.error('获取商品里列表失败！')
       }
 
