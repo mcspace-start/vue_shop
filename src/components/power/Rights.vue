@@ -54,7 +54,7 @@ export default {
       }
       // 成功获取列表
       this.rightsList = res.data
-      console.log(res.data)
+      // console.log(res.data)
       this.loading = false
     }
   }

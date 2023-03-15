@@ -15,7 +15,7 @@ import VueRouter from 'vue-router'
 // import Order from '../components/order/Order.vue'
 // import Report from '../components/report/Report.vue'
 
-// 改为异步加载，且webpack进行分组
+// 改为异步加载，并用 webpack 进行分组
 const Login = () => import(/* webpackChunkName: "Login_Home_Welcome" */ '../components/Login.vue')
 const Home = () => import(/* webpackChunkName: "Login-Home_Welcome" */ '../components/Home.vue')
 const Welcome = () => import(/* webpackChunkName: "Login_Home_Welcome" */ '../components/Welcome.vue')

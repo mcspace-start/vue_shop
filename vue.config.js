@@ -16,7 +16,7 @@ module.exports = {
         loadsh: '_',
         echarts: 'echarts',
         nprogress: 'NProgress',
-        'vue-quill-editor': 'VueQuillEditor'
+        // 'vue-quill-editor': 'VueQuillEditor'
       })
       // 传一个值
       config.plugin('html').tap(args => {

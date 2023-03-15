@@ -45,7 +45,6 @@
               <span>welcome</span>
             </el-menu-item>
           </el-submenu>
-
           <!-- 一级菜单 -->
           <el-submenu
             :index="item.id + ''"
@@ -62,8 +61,8 @@
             <!-- 二级菜单 -->
             <!-- 二级菜单的index用于路由跳转 -->
             <el-menu-item
-              :index="'/' + subItem.path"
               v-for="subItem in item.children"
+              :index="'/' + subItem.path"
               :key="subItem.id"
               @click="saveNavState('/' + subItem.path)"
             >
@@ -109,11 +108,13 @@ export default {
     }
   },
   created() {
+    // 获取列表数据
     this.getMenuList()
-    // 初次获取地址信息
+    // 初次获取地址信息，用于激活default-active
     this.activePath = window.sessionStorage.getItem('activePath')
   },
   methods: {
+    // 退出登录
     logout() {
       // 清除token
       window.sessionStorage.clear()
@@ -135,6 +136,7 @@ export default {
         this.toggleButtonTitle = '展开列表'
         el.currentTarget.innerText = '|||'
       }
+      // 切换展开和关闭状态
       this.isCollapse = !this.isCollapse
     },
     // 保存路由地址

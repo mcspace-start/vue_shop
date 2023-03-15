@@ -258,6 +258,7 @@ export default {
     // 获取所有角色列表
     async getRoleList() {
       const { data: res } = await this.$http.get('roles')
+      // console.log(res)
       if (res.meta.status !== 200) {
         this.loading = false
         return this.$message.error('获取角色列表失败')
@@ -381,6 +382,7 @@ export default {
       this.rightsList = res.data
       // 递归获取三级节点的 id role 包含已选中节点 不包含未选中节点
       this.getLeafKeys(role, this.defKeys)
+      // console.log(role)
       this.setRightDialogVisible = true
     },
     // 通过递归的形式，获取角色下所有的三级节点 id
@@ -406,7 +408,7 @@ export default {
         // 获取半选节点 id 数组展开
         ...this.$refs.treeRef.getHalfCheckedKeys()
       ]
-      // 对数组进行拼接
+      // 对数组进行拼接--要求为字符串拼接
       const idStr = keys.join(',')
       // 发起权限分配请求
       const { data: res } = await this.$http.post(
