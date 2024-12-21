@@ -10,13 +10,13 @@ module.exports = {
         .add('./src/main-prod.js')
       // 配置externals 不打包到一起而是在 window 全局找
       config.set('externals', {
-        vue: 'Vue',
+        vue: 'Vue', // 右侧是使用名称
         'vue-router': 'VueRouter',
         axios: 'axios',
         loadsh: '_',
         echarts: 'echarts',
         nprogress: 'NProgress',
-        'vue-quill-editor': 'VueQuillEditor'
+        // 'vue-quill-editor': 'VueQuillEditor'
       })
       // 传一个值
       config.plugin('html').tap(args => {

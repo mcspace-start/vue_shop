@@ -11,7 +11,12 @@
       <!-- 搜索输入框 -->
       <el-row>
         <el-col :span="8">
-          <el-input placeholder="请输入内容" v-model="search_id" clearable>
+          <el-input
+            placeholder="请输入订单ID"
+            v-model="search_id"
+            @clear="getOrderList"
+            clearable
+          >
             <el-button
               slot="append"
               icon="el-icon-search"
@@ -21,7 +26,13 @@
         </el-col>
       </el-row>
       <!-- 订单列表数据 -->
-      <el-table :data="orderList" border stripe v-loading="loading">
+      <el-table
+        :data="orderList"
+        border
+        stripe
+        v-loading="loading"
+        @row-click="getOrderDetails"
+      >
         <!-- 索引列 -->
         <el-table-column type="index" label="#"></el-table-column>
         <!-- 订单编号 -->
@@ -152,9 +163,20 @@
         </el-timeline-item>
       </el-timeline>
     </el-dialog>
+    <!-- 订单详情 -->
+    <el-dialog title="订单详情" :visible.sync="orderDetailsVisible" width="50%">
+      <el-table :data="orderGoods" border style="width: 100%">
+        <el-table-column prop="goods_id" label="商品ID"> </el-table-column>
+        <el-table-column prop="goods_price" label="单价"> </el-table-column>
+        <el-table-column prop="goods_number" label="数量"> </el-table-column>
+        <el-table-column prop="goods_total_price" label="总价">
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 <script>
+/* eslint-disable */
 // 导入外部数据源
 import cityData from './citydata.js'
 export default {
@@ -165,7 +187,7 @@ export default {
       queryInfo: {
         query: '',
         pagenum: 1,
-        pagesize: 5
+        pagesize: 5,
       },
       // 总条数
       total: 0,
@@ -176,20 +198,20 @@ export default {
       // 修改地址对话框数据绑定对象
       addressForm: {
         address1: [],
-        address2: ''
+        address2: '',
       },
       // 修改地址对话框表单验证
       addressFormRules: {
         address1: [
-          { required: true, message: '请选择省市/区', trigger: 'blur' }
+          { required: true, message: '请选择省市/区', trigger: 'blur' },
         ],
         address2: [
           {
             required: true,
             message: '请输入详细地址',
-            trigger: 'blur'
-          }
-        ]
+            trigger: 'blur',
+          },
+        ],
       },
       // 导入citydata数据 简写
       cityData,
@@ -199,7 +221,9 @@ export default {
       progressInfo: [],
       search_id: '',
       // 遮罩层
-      loading: true
+      loading: true,
+      orderDetailsVisible: false,
+      orderGoods: {},
     }
   },
   created() {
@@ -209,7 +233,7 @@ export default {
     // 获取列表数据
     async getOrderList() {
       const { data: res } = await this.$http.get('orders', {
-        params: this.queryInfo
+        params: this.queryInfo,
       })
 
       if (res.meta.status !== 200) {
@@ -262,9 +286,25 @@ export default {
     },
     // 查询订单
     async queryOrder() {
-      this.$message.error('未提供查询接口！')
-    }
-  }
+      if (this.search_id.trim() == '') return this.$message.error('ID为空！')
+      const { data: res } = await this.$http.get('/orders/' + this.search_id)
+      if (res.meta.status !== 200) {
+        return this.$message.error(res.meta.msg)
+      }
+      //
+      this.orderList = [res.data]
+      this.total = 1
+    },
+    // 查看订单详情
+    async getOrderDetails(order, cloumn) {
+      if (cloumn.label == '操作') return
+      const id = order.order_id
+      const { data: res } = await this.$http.get('/orders/' + id)
+
+      this.orderGoods = res.data.goods
+      this.orderDetailsVisible = true
+    },
+  },
 }
 </script>
 <style lang="less" scoped>

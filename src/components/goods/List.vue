@@ -52,6 +52,7 @@
         ></el-table-column>
         <!-- 创建时间 -->
         <el-table-column label="创建时间" width="170px" prop="add_time">
+          <!-- 使用插槽修改时间格式，使用全局过滤器 dateFormat -->
           <template slot-scope="scope">
             {{ scope.row.add_time | dateFormat }}
           </template>
@@ -156,6 +157,7 @@ export default {
       this.queryInfo.pagenum = newPage
       this.getGoodsList()
     },
+    // 编辑商品
     async editGoods(id) {
       // var { data: res } = await this.$http.put('goods/' + id, {})
     },

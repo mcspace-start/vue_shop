@@ -1,6 +1,5 @@
 import Vue from 'vue'
-// import ElementUI from 'element-ui';            // 改为按需使用
-
+// import ElementUI from 'element-ui';
 // 按需导入 在dev下生效
 import {
   Form,
@@ -45,7 +44,8 @@ import {
   TimelineItem,
   Loading,
   Link,
-  Scrollbar
+  Scrollbar,
+  Empty
 } from 'element-ui'
 
 // Vue.use(Element)
@@ -90,6 +90,7 @@ Vue.use(TimelineItem)
 Vue.use(Loading)
 Vue.use(Link)
 Vue.use(Scrollbar)
+Vue.use(Empty)
 
 // 在vue全局实例内定义 $message 挂载element Message组件
 Vue.prototype.$message = Message

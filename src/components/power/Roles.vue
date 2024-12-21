@@ -6,7 +6,8 @@
       <el-breadcrumb-item>权限管理</el-breadcrumb-item>
       <el-breadcrumb-item>角色列表</el-breadcrumb-item>
     </el-breadcrumb>
-    <el-scrollbar style="height:96%" class="content-scrollbar">
+    <!-- 包裹滚动条 -->
+    <el-scrollbar style="height: 96%" class="content-scrollbar">
       <!-- 卡片视图区 -->
       <el-card>
         <!-- 添加角色按钮区 -->
@@ -18,6 +19,10 @@
           <!-- 展开列 -->
           <el-table-column type="expand">
             <template slot-scope="scope">
+              <!-- 空列表 -->
+              <el-empty description="权限为空" v-if="!scope.row.children.length"
+              :image-size="60"
+              ></el-empty>
               <!-- class添加border样式 -->
               <el-row
                 v-for="(item1, i1) in scope.row.children"
@@ -85,7 +90,7 @@
                 size="mini"
                 type="primary"
                 icon="el-icon-edit"
-                @click="showEditDialog(scope.row.id)"
+                @click="showEditDialog(scope.row)"
                 >编辑</el-button
               >
               <!-- 删除 -->
@@ -190,6 +195,7 @@
   </div>
 </template>
 <script>
+/* eslint-disable */
 export default {
   name: 'rights',
   data() {
@@ -201,18 +207,28 @@ export default {
       // 添加角色列表对象数据
       addRoleForm: {
         roleName: '',
-        roleDesc: ''
+        roleDesc: '',
       },
       // 添加角色列表验证规则
       addRoleRules: {
         roleName: [
           { required: true, message: '请输入角色名称', trigger: 'blur' },
-          { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
+          {
+            min: 2,
+            max: 10,
+            message: '长度在 2 到 10 个字符',
+            trigger: 'blur',
+          },
         ],
         roleDesc: [
           { required: true, message: '请输入角色描述', trigger: 'blur' },
-          { min: 4, max: 15, message: '长度在 4 到 15 个字符', trigger: 'blur' }
-        ]
+          {
+            min: 4,
+            max: 15,
+            message: '长度在 4 到 15 个字符',
+            trigger: 'blur',
+          },
+        ],
       },
       // 编辑角色对话框
       editDialogVisible: false,
@@ -220,18 +236,28 @@ export default {
       editRoleForm: {
         id: 0,
         roleName: '',
-        roleDesc: ''
+        roleDesc: '',
       },
       // 修改角色信息校验规则
       editRoleRules: {
         roleName: [
           { required: true, message: '请输入角色名称', trigger: 'blur' },
-          { min: 2, max: 12, message: '长度在 2 到 12 个字符', trigger: 'blur' }
+          {
+            min: 2,
+            max: 12,
+            message: '长度在 2 到 12 个字符',
+            trigger: 'blur',
+          },
         ],
         roleDesc: [
           { required: true, message: '请输入角色描述', trigger: 'blur' },
-          { min: 4, max: 25, message: '长度在 4 到 25 个字符', trigger: 'blur' }
-        ]
+          {
+            min: 4,
+            max: 25,
+            message: '长度在 4 到 25 个字符',
+            trigger: 'blur',
+          },
+        ],
       },
       // 是否显示权限分配对话框
       setRightDialogVisible: false,
@@ -240,14 +266,14 @@ export default {
       // 树形控件属性绑定对象，对应树形控件生成规则
       treeProps: {
         label: 'authName',
-        children: 'children'
+        children: 'children',
       },
       // 默认选中的节点 id 值
       defKeys: [],
       // 当前即将分配角色的 id 用于分配权限
       roleId: '',
       // 加载动画
-      loading: true
+      loading: true,
     }
   },
   created() {
@@ -273,7 +299,7 @@ export default {
     // 添加角色信息提交
     addRoleInfo() {
       // 发起添加角色信息请求
-      this.$refs.addRoleFormRef.validate(async valid => {
+      this.$refs.addRoleFormRef.validate(async (valid) => {
         // 校验规则
         if (!valid) return
         const { data: res } = await this.$http.post('roles', this.addRoleForm)
@@ -287,11 +313,11 @@ export default {
       })
     },
     // 根据id查询当前角色信息
-    async showEditDialog(id) {
+    async showEditDialog(row) {
       // 打开对话框
       this.editDialogVisible = true
       // 发起根据id查询当前角色信息的请求
-      const { data: res } = await this.$http.get('roles/' + id)
+      const { data: res } = await this.$http.get('roles/' + row.id)
       if (res.meta.status !== 200) {
         return this.$message.error('查询角色信息失败！')
       }
@@ -304,17 +330,17 @@ export default {
     // 编辑角色信息提交
     editRoleInfo() {
       // 发起编辑角色请求
-      this.$refs.editRoleFormRef.validate(async valid => {
+      this.$refs.editRoleFormRef.validate(async (valid) => {
         if (!valid) return
         const { data: res } = await this.$http.put(
           'roles/' + this.editRoleForm.roleId,
           {
             roleName: this.editRoleForm.roleName,
-            roleDesc: this.editRoleForm.roleDesc
+            roleDesc: this.editRoleForm.roleDesc,
           }
         )
         if (res.meta.status !== 200) {
-          return this.$message.error('修改角色信息失败！')
+          return this.$message.error('修改角色信息失败！' + res.meta.msg)
         }
         this.$message.success('修改角色信息成功！')
         // 刷新列表
@@ -332,9 +358,9 @@ export default {
         {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
-          type: 'warning'
+          type: 'warning',
         }
-      ).catch(err => err)
+      ).catch((err) => err)
       // 判断是否取消删除操作
       if (confirmResult !== 'confirm') {
         return this.$message.info('取消删除操作！')
@@ -355,9 +381,9 @@ export default {
         {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
-          type: 'warning'
+          type: 'warning',
         }
-      ).catch(err => err)
+      ).catch((err) => err)
 
       if (confirmResult !== 'confirm') return this.$message.info('取消了删除')
 
@@ -389,8 +415,7 @@ export default {
       if (!node.children) {
         return arr.push(node.id)
       }
-
-      node.children.forEach(item => {
+      node.children.forEach((item) => {
         this.getLeafKeys(item, arr)
       })
     },
@@ -404,15 +429,15 @@ export default {
         // 获取已选节点 id 数组进行展开
         ...this.$refs.treeRef.getCheckedKeys(),
         // 获取半选节点 id 数组展开
-        ...this.$refs.treeRef.getHalfCheckedKeys()
+        ...this.$refs.treeRef.getHalfCheckedKeys(),
       ]
-      // 对数组进行拼接
+      // 对数组进行拼接--要求为字符串拼接
       const idStr = keys.join(',')
       // 发起权限分配请求
       const { data: res } = await this.$http.post(
         `roles/${this.roleId}/rights`,
         {
-          rids: idStr
+          rids: idStr,
         }
       )
 
@@ -423,8 +448,8 @@ export default {
       // 刷新列表级更新数据
       this.getRoleList()
       this.setRightDialogVisible = false
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="less" scoped>
@@ -440,5 +465,8 @@ export default {
 .vcenter {
   display: flex;
   align-items: center;
+}
+.el-empty{
+  height: 100px;
 }
 </style>

@@ -1,7 +1,8 @@
 <template>
   <div>
     <el-card>
-      欢迎访问电商后台管理系统
+      欢迎访问电商后台管理系统<br>
+      <span style="color: red;">由于api服务已关闭，下面是项目仓库地址</span>
       <div class="top">
         <div class="getee-logo">
           <img

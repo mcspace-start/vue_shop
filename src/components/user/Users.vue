@@ -10,6 +10,7 @@
     <el-card>
       <!-- 搜索与添加区域 -->
       <el-row :gutter="20">
+        <!-- 搜索框 -->
         <el-col :span="10">
           <el-input
             placeholder="请输入内容"
@@ -25,6 +26,7 @@
             ></el-button>
           </el-input>
         </el-col>
+        <!-- 添加用户 -->
         <el-col :span="4">
           <el-button type="primary" @click="addDialogVisible = true"
             >添加用户</el-button
@@ -42,6 +44,7 @@
         ></el-table-column>
         <el-table-column label="电话" prop="mobile"></el-table-column>
         <el-table-column label="角色" prop="role_name"></el-table-column>
+        <!-- 状态列 -->
         <el-table-column label="状态">
           <!-- 创建作用域插槽 -->
           <template slot-scope="scope">
@@ -51,6 +54,7 @@
             ></el-switch>
           </template>
         </el-table-column>
+        <!-- 操作列 -->
         <el-table-column label="操作" width="180px">
           <template slot-scope="scope">
             <!-- 修改按钮 -->
@@ -64,7 +68,7 @@
                 type="primary"
                 icon="el-icon-edit"
                 size="mini"
-                @click="showEditDialog(scope.row.id)"
+                @click="showEditDialog(scope.row.id, scope.row)"
               ></el-button>
             </el-tooltip>
             <!-- 删除按钮 -->
@@ -100,13 +104,13 @@
       </el-table>
       <!-- 分页列表区 -->
       <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
         :current-page="queryInfo.pagenum"
         :page-sizes="[1, 3, 5, 10]"
         :page-size="queryInfo.pagesize"
-        layout="total, sizes, prev, pager, next, jumper"
         :total="total"
+        layout="total, sizes, prev, pager, next, jumper"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
       >
       </el-pagination>
     </el-card>
@@ -205,6 +209,7 @@
   </div>
 </template>
 <script>
+/* eslint-disable */
 export default {
   name: 'user',
   data() {
@@ -214,6 +219,7 @@ export default {
       const regEmail = /^\w+((-\w+)|(\.\w+))*@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/
       // 合法邮箱
       if (regEmail.test(val)) {
+        // 直接 callback 表示通过验证
         return cb()
       }
       // 不合法
@@ -300,12 +306,13 @@ export default {
     }
   },
   created() {
-    // 首次获取用户雷暴
+    // 首次获取用户列表
     this.getUserList()
   },
   methods: {
     // 获取用户列表
     async getUserList() {
+      // queryInfo 可以为空
       const { data: res } = await this.$http.get('users', {
         params: this.queryInfo
       })
@@ -320,6 +327,7 @@ export default {
     },
     // 监听 pagesize  改变事件
     handleSizeChange(newSize) {
+      // 每页显示条数
       this.queryInfo.pagesize = newSize
       // 重新发起请求获取数据
       this.getUserList()
@@ -329,25 +337,15 @@ export default {
       this.queryInfo.pagenum = newPage
       this.getUserList()
     },
-    // 修改 swit 开关状态改变
-    async userStateChange(userinfo) {
-      const { data: res } = await this.$http.put(
-        `users/${userinfo.id}/state/${userinfo.mg_state}`
-      )
-      if (res.meta.status !== 200) {
-        // 还原状态
-        userinfo.mg_state = !userinfo.mg_state
-        return this.$message.error('状态修改失败！')
-      }
-      return this.$message.success('更新状态成功！')
-    },
     // 监听添加用户对话框的关闭事件
-    addDialogClosed() {
+    addDialogClosed(e) {
+      // 清空验证
       this.$refs.addFormRef.resetFields()
     },
     // 点击按钮添加新用户
     addUser() {
       this.$refs.addFormRef.validate(async valid => {
+        // 验证不通过直接取消
         if (!valid) return
         // 通过发起请求
         const { data: res } = await this.$http.post('users', this.addForm)
@@ -362,8 +360,20 @@ export default {
         this.getUserList()
       })
     },
+    // 修改 swit 开关状态改变
+    async userStateChange(userinfo) {
+      const { data: res } = await this.$http.put(
+        `users/${userinfo.id}/state/${userinfo.mg_state}`
+      )
+      if (res.meta.status !== 200) {
+        // 还原状态
+        userinfo.mg_state = !userinfo.mg_state
+        return this.$message.error('状态修改失败！')
+      }
+      return this.$message.success('更新状态成功！')
+    },
     // 展示编辑用户的对话框
-    async showEditDialog(id) {
+    async showEditDialog(id, row) {
       this.editDialogVisible = true
       // 根据 id 查询用户信息
       const { data: res } = await this.$http.get('users/' + id)
@@ -371,6 +381,13 @@ export default {
         return this.$message.error('查询用户信息失败！')
       }
       this.editForm = res.data
+      // 直接使用本地数据，不进行获取
+      // this.editForm = {
+      //   id: row.id,
+      //   email: row.email,
+      //   mobile: row.mobile,
+      //   username: row.username
+      // }
     },
     // 监听修改用户对话框的关闭事件
     editDialogClosed() {
@@ -446,11 +463,9 @@ export default {
           rid: this.selectedRoleid
         }
       )
-
       if (res.meta.status !== 200) {
         return this.$message.error('更新角色失败！')
       }
-
       this.$message.success('更新角色成功！')
       // 更新数据和关闭对话框
       this.getUserList()

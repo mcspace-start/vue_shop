@@ -15,7 +15,7 @@ import VueRouter from 'vue-router'
 // import Order from '../components/order/Order.vue'
 // import Report from '../components/report/Report.vue'
 
-// 改为异步加载，且webpack进行分组
+// 改为异步加载，并用 webpack 进行分组
 const Login = () => import(/* webpackChunkName: "Login_Home_Welcome" */ '../components/Login.vue')
 const Home = () => import(/* webpackChunkName: "Login-Home_Welcome" */ '../components/Home.vue')
 const Welcome = () => import(/* webpackChunkName: "Login_Home_Welcome" */ '../components/Welcome.vue')
@@ -77,7 +77,7 @@ router.beforeEach((to, from, next) => {
   if (!token) return next('/login')
   // 放行
   next()
-  // 保存跳转地址用于 home 组件的 menu 菜单激活属性
+  // 保存跳转地址用于 home 组件的 menu 菜单激活属性（用于第一次跳转激活菜单）
   window.sessionStorage.setItem('activePath', to.fullPath)
 })
 

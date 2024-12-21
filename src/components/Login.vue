@@ -17,7 +17,7 @@
         <el-form-item prop="username">
           <el-input
             v-model="loginForm.username"
-            prefix-icon="iconfont  icon-user"
+            prefix-icon="iconfont icon-user"
           ></el-input>
         </el-form-item>
         <!-- 密码 -->
@@ -25,7 +25,8 @@
           <el-input
             v-model="loginForm.password"
             type="password"
-            prefix-icon="iconfont  icon-3702mima"
+            prefix-icon="iconfont icon-3702mima"
+            show-password
           ></el-input>
         </el-form-item>
         <!-- 按钮区域 -->
@@ -81,30 +82,43 @@ export default {
   methods: {
     // 重置登录表单
     resetLoginForm() {
+      // 表单重置方法
       this.$refs.loginFormRef.resetFields()
     },
     // 登录
     login() {
-      console.log('发起登录')
+      // console.log('发起登录')
       this.loading = true
-      this.$refs.loginFormRef.validate(async valid => {
+      this.$refs.loginFormRef.validate(async (valid) => {
         // 校验不通过
         if (!valid) {
           this.loading = false
           return
         }
         // 校验通过 发起登录请求
-        const { data: res } = await this.$http.post('login', this.loginForm)
+        const { data: res } = await this.$http.post('login', this.loginForm, {
+          timeout: 1000
+        })
+        // const res = {
+        //   meta: {
+        //     status: 200
+        //   },
+        //   data: {
+        //     token: 'asd123'
+        //   }
+        // }
+        // 如果失败
         if (res.meta.status !== 200) {
           this.loading = false
           return this.$message.error(`登陆失败！${res.meta.msg}`)
         }
-        // 更改按钮样式
+        // 成功-更改按钮样式
         this.loading = false
-        this.$message({
-          type: 'success',
-          message: '登录成功'
-        })
+        this.$message.success('登录成功')
+        // this.$message({
+        //   type: 'success',
+        //   message: '登录成功',
+        // })
         // 将token写入sessionStorage里
         window.sessionStorage.setItem('token', res.data.token)
         // 将欢迎页面激活，写死

@@ -4,7 +4,7 @@
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>商品管理</el-breadcrumb-item>
-      <el-breadcrumb-item>商品参数</el-breadcrumb-item>
+      <el-breadcrumb-item>分类参数</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 滚动条区域 -->
     <el-scrollbar style="height:96%" class="content-scrollbar">
@@ -58,7 +58,6 @@
                     @close="handleClose(i, scope.row)"
                     >{{ item }}</el-tag
                   >
-
                   <!-- 添加参数按钮 -->
                   <el-input
                     class="input-new-tag"
@@ -199,7 +198,7 @@
     </el-scrollbar>
     <!-- 这是添加动态参数/静态属性的对话框 -->
     <el-dialog
-      :title="'添加' + titleText"
+      :title="activeName == 'many' ? '添加动态参数' : '添加静态属性'"
       :visible.sync="addDialogVisible"
       width="50%"
       @close="addDialogClosed"
@@ -313,6 +312,7 @@ export default {
     }
   },
   created() {
+    // 首次获取级联选择器内容
     this.getCateList()
   },
   computed: {
@@ -348,7 +348,7 @@ export default {
         return this.$message.error('获取商品分类失败！')
       }
       this.cateList = res.data
-
+      // console.log(this.cateList)
       // 非三级禁止选择 disabled = true
       for (let i = 0; i < this.cateList.length; i++) {
         if (!this.cateList[i].children) {
@@ -600,6 +600,7 @@ export default {
       // vue在同步数据后不会立即渲染，渲染则像是异步操作，$nextTick也像是类型异步；等待渲染完成后执行代码
       this.$nextTick(_ => {
         this.$refs.saveTagInput.$refs.input.focus()
+        console.log(this.$refs.saveTagInput)
       })
     }
   }

@@ -9,11 +9,7 @@
     <!-- 卡片区 -->
     <el-card>
       <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-      <div
-        id="main"
-        style="width: 760px;height:420px;"
-        v-loading="loading"
-      ></div>
+      <div id="main" v-loading="loading"></div>
     </el-card>
   </div>
 </template>
@@ -85,4 +81,9 @@ export default {
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+#main {
+  width: 760px;
+  height: 420px;
+}
+</style>

@@ -31,7 +31,6 @@
         <el-step title="商品内容"></el-step>
         <el-step title="完成"></el-step>
       </el-steps>
-
       <!-- tab 栏区 -->
       <el-form
         :model="addForm"
@@ -41,11 +40,12 @@
         label-position="top"
       >
         <el-tabs
-          :tab-position="'left'"
           v-model="activeIndex"
+          :tab-position="'left'"
           :before-leave="beforeTabLeave"
           @tab-click="tabClicked"
         >
+          <!-- tab动态绑定的是tab-pane name属性值 -->
           <el-tab-pane label="基本信息" name="0">
             <el-form-item label="商品名称" prop="goods_name">
               <el-input v-model="addForm.goods_name"></el-input>
@@ -158,6 +158,16 @@ export default {
         // 商品的详情描述(商品内容)
         goods_introduce: ''
       },
+      // 商品分类数据，用于级联选择器
+      catelist: [],
+      // 级联选择器配置
+      cateProps: {
+        label: 'cat_name',
+        value: 'cat_id',
+        children: 'children',
+        // 展开状态方式为 hover
+        expandTrigger: 'hover'
+      },
       // 添加商品表单数据校验规则
       addFormRules: {
         goods_name: [
@@ -192,16 +202,6 @@ export default {
           { required: true, message: '请选择商品分类', trigger: 'change' }
         ]
       },
-      // 商品分类数据，用于级联选择器
-      catelist: [],
-      // 级联选择器配置
-      cateProps: {
-        label: 'cat_name',
-        value: 'cat_id',
-        children: 'children',
-        // 展开状态方式为 hover
-        expandTrigger: 'hover'
-      },
       // 动态参数列表数据，数组对象通过多选框改变值
       manyTableData: [],
       // 静态属性列表数组
@@ -222,6 +222,8 @@ export default {
   created() {
     // 获取所有商品分类数据
     this.getCateList()
+    // 保持侧边栏高亮为 goods
+    window.sessionStorage.setItem('activePath', '/goods')
   },
   computed: {
     // 返回所选分类id
@@ -235,7 +237,7 @@ export default {
     truePreviewPath() {
       const str = 'https://lianghj.top:8888'
       // http://127.0.0.1:8888/tmp_uploads/d64c8a534ba6204e70e2c0b92dae4de5.gif
-      const url = str + this.previewPath.substring(21)
+      const url = str + this.previewPath.substring(24)
       return url
     }
   },
@@ -252,7 +254,8 @@ export default {
     // 级联选择器选中项变化事件
     handleChange() {
       // 只允许选择三级分类
-      if (this.addForm.goods_cat.length !== 3) {
+      if (this.addForm.goods_cat.length === 0) {
+      } else if (this.addForm.goods_cat.length !== 3) {
         // 清空
         this.addForm.goods_cat = []
         return this.$message.error('只允许选择三级标签')
@@ -260,15 +263,18 @@ export default {
     },
     // 切换 tabs标签之前的钩子，进行监控
     beforeTabLeave(activeName, oldActiveName) {
+      // 多重作用域使用变量返回
       let nextB = true
       // 完整填写基本信息必填项
       if (oldActiveName === '0') {
         this.$refs.addFormRef.validate(valid => {
+          console.log(valid)
           if (!valid) {
             nextB = false
-            return this.$message.error('请填写基本信息必填项！')
+            this.$message.error('请填写基本信息必填项！')
+          } else {
+            nextB = true
           }
-          nextB = true
         })
       }
       return nextB
@@ -277,7 +283,7 @@ export default {
     },
     // tab标签点击事件
     async tabClicked() {
-      // 判断访问的是动态参数或是静态属性
+      // 判断访问的是动态参数或是静态属性，对attr_vals进行处理
       if (this.activeIndex === '1') {
         // 动态参数
         const { data: res } = await this.$http.get(
@@ -318,6 +324,7 @@ export default {
       // 接受一个 file 包含文件详细信息
       // 临时文件信息；位置，用于打开图片大图使用
       this.previewPath = file.response.data.url
+      // console.log(file)
       // 显示图片预览对话框
       this.previewVisible = true
     },

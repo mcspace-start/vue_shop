@@ -26,7 +26,7 @@ import 'nprogress/nprogress.css'
 // 注册富文本编辑器为全局组件
 Vue.use(VueQuillEditor)
 // 设置axios默认根路径，并开始进度条 NProgress.start()
-axios.defaults.baseURL = 'https://lianghj.top:8888/api/private/v1/'
+axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/'
 // axios对请求头对象挂载自定义段(请求拦截器)
 axios.interceptors.request.use(config => {
   // 展示进度条
@@ -44,7 +44,7 @@ axios.interceptors.response.use(config => {
 })
 // 关闭vue控制台提示
 Vue.config.productionTip = false
-// 将axios导入到vueprototype里
+// 将axios导入到vue prototype里
 Vue.prototype.$http = axios
 // 将表格树插件注册为全局组件
 Vue.component('tree-table', TreeTable)
