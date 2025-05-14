@@ -98,13 +98,13 @@ export default {
         103: 'iconfont icon-tijikongjian',
         101: 'iconfont icon-shangpin',
         102: 'iconfont icon-danju',
-        145: 'iconfont icon-baobiao'
+        145: 'iconfont icon-baobiao',
       },
       // 是否折叠左边栏
       isCollapse: false,
       // 被激活的链接地址
       activePath: '',
-      toggleButtonTitle: '折叠列表'
+      toggleButtonTitle: '折叠列表',
     }
   },
   created() {
@@ -123,9 +123,14 @@ export default {
     },
     // 获取左侧菜单数据
     async getMenuList() {
-      const { data: res } = await this.$http.get('menus')
-      if (res.meta.status !== 200) return this.$message.error(res.msg)
-      this.menuList = res.data
+      try {
+        const { data: res } = await this.$http.get('menus')
+        if (res.meta.status !== 200) return this.$message.error(res.msg)
+        this.menuList = res.data
+      } catch (error) {
+        console.log(error)
+        this.$message.error('获取菜单列表失败')
+      }
     },
     // 切换菜单栏折叠展开
     // toggleCollapse(el) {
@@ -143,12 +148,12 @@ export default {
       window.sessionStorage.setItem('activePath', activePath)
       // 切换子页面时更新路由地址
       this.activePath = window.sessionStorage.getItem('activePath')
-    }
+    },
   },
   updated() {
     // 监控在其他页面或者面包屑跳转时的地址更新
     this.activePath = window.sessionStorage.getItem('activePath')
-  }
+  },
 }
 </script>
 <style lang="less" scoped>

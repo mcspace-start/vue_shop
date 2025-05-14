@@ -7,7 +7,7 @@
       <el-breadcrumb-item>权限列表</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 滚动条区域 -->
-    <el-scrollbar style="height:96%" class="content-scrollbar">
+    <el-scrollbar style="height: 96%" class="content-scrollbar">
       <!-- 卡片视图区 -->
       <el-card>
         <el-table :data="rightsList" border stripe v-loading="loading">
@@ -37,7 +37,7 @@ export default {
       // 权限列表
       rightsList: [],
       // 加载动画
-      loading: true
+      loading: true,
     }
   },
   created() {
@@ -47,17 +47,20 @@ export default {
   methods: {
     // 获取所有权限列表
     async getRightsList() {
-      const { data: res } = await this.$http.get('rights/list')
-      if (res.meta.status !== 200) {
+      try {
+        const { data: res } = await this.$http.get('rights/list')
+        if (res.meta.status !== 200) {
+          this.loading = false
+          return this.$message.error('获取权限列表失败')
+        }
+        // 成功获取列表
+        this.rightsList = res.data
         this.loading = false
-        return this.$message.error('获取权限列表失败')
+      } catch (error) {
+        this.$message.error('获取权限列表失败')
       }
-      // 成功获取列表
-      this.rightsList = res.data
-      // console.log(res.data)
-      this.loading = false
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="less" scoped></style>

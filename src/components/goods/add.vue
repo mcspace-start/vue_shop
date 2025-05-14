@@ -156,7 +156,7 @@ export default {
         // 准备提交的商品参数
         attrs: [],
         // 商品的详情描述(商品内容)
-        goods_introduce: ''
+        goods_introduce: '',
       },
       // 商品分类数据，用于级联选择器
       catelist: [],
@@ -166,41 +166,41 @@ export default {
         value: 'cat_id',
         children: 'children',
         // 展开状态方式为 hover
-        expandTrigger: 'hover'
+        expandTrigger: 'hover',
       },
       // 添加商品表单数据校验规则
       addFormRules: {
         goods_name: [
-          { required: true, message: '请输入商品名称', trigger: 'blur' }
+          { required: true, message: '请输入商品名称', trigger: 'blur' },
         ],
         goods_price: [
           { required: true, message: '请输入商品价格', trigger: 'blur' },
           {
             pattern: /^[1-9]\d*$/,
             message: '价格必须大于0',
-            trigger: 'blur'
-          }
+            trigger: 'blur',
+          },
         ],
         goods_weight: [
           { required: true, message: '请输入商品重量', trigger: 'blur' },
           {
             pattern: /^[1-9]\d*$/,
             message: '重量必须大于0',
-            trigger: 'blur'
-          }
+            trigger: 'blur',
+          },
         ],
         goods_number: [
           { required: true, message: '请输入商品数量', trigger: 'blur' },
           {
             pattern: /^[1-9]\d*$/,
             message: '数量必须大于0',
-            trigger: 'blur'
-          }
+            trigger: 'blur',
+          },
         ],
         goods_cat: [
           // change 改变时验证
-          { required: true, message: '请选择商品分类', trigger: 'change' }
-        ]
+          { required: true, message: '请选择商品分类', trigger: 'change' },
+        ],
       },
       // 动态参数列表数据，数组对象通过多选框改变值
       manyTableData: [],
@@ -211,12 +211,12 @@ export default {
       // 图片上传组件的headers请求头对象
       headerObj: {
         // 配置token
-        Authorization: window.sessionStorage.getItem('token')
+        Authorization: window.sessionStorage.getItem('token'),
       },
       // 上传图片的保存位置
       previewPath: '',
       // 图片预览对话框显示与隐藏
-      previewVisible: false
+      previewVisible: false,
     }
   },
   created() {
@@ -239,17 +239,20 @@ export default {
       // http://127.0.0.1:8888/tmp_uploads/d64c8a534ba6204e70e2c0b92dae4de5.gif
       const url = str + this.previewPath.substring(24)
       return url
-    }
+    },
   },
   methods: {
     // 获取所有商品分类数据，用于级联选择器
     async getCateList() {
-      const { data: res } = await this.$http.get('categories')
-
-      if (res.meta.status !== 200) {
-        return this.$message.error('获取商品分类失败！')
+      try {
+        const { data: res } = await this.$http.get('categories')
+        if (res.meta.status !== 200) {
+          return this.$message.error('获取商品分类失败！')
+        }
+        this.catelist = res.data
+      } catch {
+        this.$message.error('获取商品分类失败！')
       }
-      this.catelist = res.data
     },
     // 级联选择器选中项变化事件
     handleChange() {
@@ -267,7 +270,7 @@ export default {
       let nextB = true
       // 完整填写基本信息必填项
       if (oldActiveName === '0') {
-        this.$refs.addFormRef.validate(valid => {
+        this.$refs.addFormRef.validate((valid) => {
           console.log(valid)
           if (!valid) {
             nextB = false
@@ -283,40 +286,44 @@ export default {
     },
     // tab标签点击事件
     async tabClicked() {
-      // 判断访问的是动态参数或是静态属性，对attr_vals进行处理
-      if (this.activeIndex === '1') {
-        // 动态参数
-        const { data: res } = await this.$http.get(
-          `categories/${this.cateId}/attributes`,
-          {
-            params: { sel: 'many' }
+      try {
+        // 判断访问的是动态参数或是静态属性，对attr_vals进行处理
+        if (this.activeIndex === '1') {
+          // 动态参数
+          const { data: res } = await this.$http.get(
+            `categories/${this.cateId}/attributes`,
+            {
+              params: { sel: 'many' },
+            }
+          )
+          if (res.meta.status !== 200) {
+            return this.$message.error('获取动态参数列表失败！')
           }
-        )
-        if (res.meta.status !== 200) {
-          return this.$message.error('获取动态参数列表失败！')
-        }
-        // 默认 attr_vals 值是字符串，需要拆分为数组进行列表渲染
-        // 将 attr_vals 以空格拆分字符串
-        res.data.forEach(item => {
-          // (再将其赋值到本身方便使用)
-          item.attr_vals =
-            item.attr_vals.length === 0 ? [] : item.attr_vals.split(' ')
-        })
-        // 赋值
-        this.manyTableData = res.data
-      } else if (this.activeIndex === '2') {
-        // 静态属性
-        const { data: res } = await this.$http.get(
-          `categories/${this.cateId}/attributes`,
-          {
-            params: { sel: 'only' }
+          // 默认 attr_vals 值是字符串，需要拆分为数组进行列表渲染
+          // 将 attr_vals 以空格拆分字符串
+          res.data.forEach((item) => {
+            // (再将其赋值到本身方便使用)
+            item.attr_vals =
+              item.attr_vals.length === 0 ? [] : item.attr_vals.split(' ')
+          })
+          // 赋值
+          this.manyTableData = res.data
+        } else if (this.activeIndex === '2') {
+          // 静态属性
+          const { data: res } = await this.$http.get(
+            `categories/${this.cateId}/attributes`,
+            {
+              params: { sel: 'only' },
+            }
+          )
+          if (res.meta.status !== 200) {
+            return this.$message.error('获取静态属性列表失败！')
           }
-        )
-        if (res.meta.status !== 200) {
-          return this.$message.error('获取静态属性列表失败！')
+          // 赋值
+          this.onlyTableData = res.data
         }
-        // 赋值
-        this.onlyTableData = res.data
+      } catch {
+        this.$message.error('获取参数列表失败！')
       }
     },
     // 点击图片时打开，处理图片预览效果
@@ -333,7 +340,7 @@ export default {
       // 1.获取将要删除的图片临时路径
       const filePath = file.response.data.tmp_path
       // 2.从 pic 数组找到对应的索引值
-      const i = this.addForm.pics.findIndex(x => x.pic === filePath)
+      const i = this.addForm.pics.findIndex((x) => x.pic === filePath)
       // 3.调用 split 方法从数组中移除信息对象
       this.addForm.pics.splice(i, 1)
     },
@@ -341,57 +348,61 @@ export default {
     handleSuccess(response) {
       // 1.拼接得到一个图片信息对象
       const picInfo = {
-        pic: response.data.tmp_path
+        pic: response.data.tmp_path,
       }
       // 2.将图片信息对象，push 到 pics 数组，用于最后发送添加商品请求
       this.addForm.pics.push(picInfo)
     },
     // 添加商品
     add() {
-      this.$refs.addFormRef.validate(async valid => {
-        // 表单验证
-        if (!valid) {
-          return this.$message.error('请填写必要的表单项！')
-        }
-        // 实现添加逻辑
-        // 深拷贝 loadsh cloneDeep(obj)
-        const form = _.cloneDeep(this.addForm)
-        // 合并数组为字符串，符合提交要求
-        form.goods_cat = form.goods_cat.join(',')
-        // 处理动态参数，转成符合发送请求格式
-        this.manyTableData.forEach(item => {
-          const newInfo = {
-            attr_id: item.attr_id,
-            attr_value: item.attr_vals.join(' ')
+      this.$refs.addFormRef.validate(async (valid) => {
+        try {
+          // 表单验证
+          if (!valid) {
+            return this.$message.error('请填写必要的表单项！')
           }
-          this.addForm.attrs.push(newInfo)
-        })
-        // 处理静态属性，转成符合发送请求格式
-        this.onlyTableData.forEach(item => {
-          const newInfo = {
-            attr_id: item.attr_id,
-            attr_value: item.attr_vals
-          }
-          this.addForm.attrs.push(newInfo)
-        })
-        // 赋值到 form
-        form.attrs = this.addForm.attrs
-        // 发起请求添加商品
-        const { data: res } = await this.$http.post('goods', form)
+          // 实现添加逻辑
+          // 深拷贝 loadsh cloneDeep(obj)
+          const form = _.cloneDeep(this.addForm)
+          // 合并数组为字符串，符合提交要求
+          form.goods_cat = form.goods_cat.join(',')
+          // 处理动态参数，转成符合发送请求格式
+          this.manyTableData.forEach((item) => {
+            const newInfo = {
+              attr_id: item.attr_id,
+              attr_value: item.attr_vals.join(' '),
+            }
+            this.addForm.attrs.push(newInfo)
+          })
+          // 处理静态属性，转成符合发送请求格式
+          this.onlyTableData.forEach((item) => {
+            const newInfo = {
+              attr_id: item.attr_id,
+              attr_value: item.attr_vals,
+            }
+            this.addForm.attrs.push(newInfo)
+          })
+          // 赋值到 form
+          form.attrs = this.addForm.attrs
+          // 发起请求添加商品
+          const { data: res } = await this.$http.post('goods', form)
 
-        if (res.meta.status !== 201) {
-          return this.$message.error('添加商品失败！' + res.meta.msg)
+          if (res.meta.status !== 201) {
+            return this.$message.error('添加商品失败！')
+          }
+          this.$message.success('添加商品成功！')
+          // 跳转路由
+          this.$router.push('/goods')
+        } catch {
+          this.$message.error('添加商品失败！')
         }
-        this.$message.success('添加商品成功！')
-        // 跳转路由
-        this.$router.push('/goods')
       })
     },
     // 返回到goods界面
     goGoods() {
       this.$router.push('/goods')
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="less" scoped>

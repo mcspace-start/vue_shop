@@ -26,22 +26,58 @@ import 'nprogress/nprogress.css'
 // 注册富文本编辑器为全局组件
 Vue.use(VueQuillEditor)
 // 设置axios默认根路径，并开始进度条 NProgress.start()
-axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/'
+axios.defaults.baseURL = 'https://vueshopserver.aprp.cn:53333/api/private/v1/'
 // axios对请求头对象挂载自定义段(请求拦截器)
-axios.interceptors.request.use(config => {
+axios.interceptors.request.use((config) => {
   // 展示进度条
   NProgress.start()
   // 信息头，添加Authorization字段
   config.headers.Authorization = window.sessionStorage.getItem('token')
+  // 设置全局timeout
+  config.timeout = 5000
   // 后面必须return config
   return config
 })
 // 在 response 拦截器中(响应拦截器)，隐藏进度条 NProgress.done()
-axios.interceptors.response.use(config => {
-  // 隐藏进度条
-  NProgress.done()
-  return config
-})
+axios.interceptors.response.use(
+  (config) => {
+    // 隐藏进度条
+    NProgress.done()
+    return config
+  },
+  (error) => {
+    console.log(error)
+    // 隐藏进度条
+    NProgress.done()
+    // 根据错误状态码显示不同的错误信息
+    if (error.response) {
+      switch (error.response.status) {
+        case 401:
+          Vue.prototype.$message.error('未授权，请重新登录')
+          router.push('/login')
+          break
+        case 403:
+          Vue.prototype.$message.error('拒绝访问')
+          break
+        case 404:
+          Vue.prototype.$message.error('请求错误,未找到该资源')
+          break
+        case 500:
+          Vue.prototype.$message.error('服务器端出错')
+          break
+        default:
+          Vue.prototype.$message.error(`连接错误${error.response.status}`)
+      }
+    } else {
+      // 请求超时或者网络有问题
+      if (error.message.includes('timeout')) {
+        Vue.prototype.$message.error('请求超时！请检查网络是否正常')
+      } else {
+        Vue.prototype.$message.error('请求失败，请检查网络是否已连接')
+      }
+    }
+  }
+)
 // 关闭vue控制台提示
 Vue.config.productionTip = false
 // 将axios导入到vue prototype里
@@ -68,5 +104,5 @@ Vue.filter('dateFormat', function (originVal) {
 
 new Vue({
   router,
-  render: h => h(App)
+  render: (h) => h(App)
 }).$mount('#app')

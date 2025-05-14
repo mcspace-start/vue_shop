@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main_wrap">
     <!-- 面包屑导航区 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
@@ -7,102 +7,121 @@
       <el-breadcrumb-item>商品列表</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 卡片区 -->
-    <el-card>
-      <!-- 搜索框及添加区 -->
-      <el-row :gutter="20">
-        <!-- 搜索框 -->
-        <el-col :span="8">
-          <el-input
-            placeholder="请输入内容"
-            clearable
-            v-model="queryInfo.query"
-            @clear="getGoodsList"
+    <el-card
+      :body-style="{
+        padding: 0,
+        height: '100%',
+      }"
+    >
+      <div class="main">
+        <div class="search">
+          <!-- 搜索框及添加区 -->
+          <el-row :gutter="20">
+            <!-- 搜索框 -->
+            <el-col :span="8">
+              <el-input
+                placeholder="请输入内容"
+                clearable
+                v-model="queryInfo.query"
+                @clear="getGoodsList"
+              >
+                <el-button
+                  slot="append"
+                  icon="el-icon-search"
+                  @click="getGoodsList"
+                ></el-button>
+              </el-input>
+            </el-col>
+            <!-- 添加按钮 -->
+            <el-col :span="4">
+              <el-col :span="4">
+                <el-button type="primary" @click="goAddpage"
+                  >添加商品</el-button
+                >
+              </el-col>
+            </el-col>
+          </el-row>
+        </div>
+        <div class="content" v-loading="loading">
+          <!-- table表格区 -->
+          <el-table :data="goodsList" border stripe>
+            <!-- 索引列 -->
+            <el-table-column type="index" label="#"></el-table-column>
+            <!-- 商品名称 -->
+            <el-table-column
+              label="商品名称"
+              prop="goods_name"
+              show-overflow-tooltip
+            ></el-table-column>
+            <!-- 商品价格 -->
+            <el-table-column
+              label="商品价格(元)"
+              prop="goods_price"
+              width="105px"
+            ></el-table-column>
+            <!-- 商品重量 -->
+            <el-table-column
+              label="商品重量"
+              width="80px"
+              prop="goods_weight"
+            ></el-table-column>
+            <!-- 创建时间 -->
+            <el-table-column label="创建时间" width="170px" prop="add_time">
+              <!-- 使用插槽修改时间格式，使用全局过滤器 dateFormat -->
+              <template slot-scope="scope">
+                {{ scope.row.add_time | dateFormat }}
+              </template>
+            </el-table-column>
+            <!-- 操作 -->
+            <el-table-column label="操作" width="125px">
+              <template slot-scope="scope">
+                <!-- 编辑 -->
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  content="编辑商品"
+                  placement="top"
+                >
+                  <el-button
+                    type="primary"
+                    size="mini"
+                    icon="el-icon-edit"
+                    @click="editGoods(scope.row.goods_id)"
+                  ></el-button>
+                </el-tooltip>
+                <!-- 删除 -->
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  content="删除商品"
+                  placement="top"
+                >
+                  <el-button
+                    type="danger"
+                    size="mini"
+                    icon="el-icon-delete"
+                    @click="removerById(scope.row.goods_id)"
+                  ></el-button>
+                </el-tooltip>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <div class="pagination">
+          <!-- 分页区 -->
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="queryInfo.pagenum"
+            :page-sizes="[5, 10, 15, 20]"
+            :page-size="queryInfo.pagesize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+            background
           >
-            <el-button
-              slot="append"
-              icon="el-icon-search"
-              @click="getGoodsList"
-            ></el-button>
-          </el-input>
-        </el-col>
-        <!-- 添加按钮 -->
-        <el-col :span="4">
-          <el-col :span="4">
-            <el-button type="primary" @click="goAddpage">添加商品</el-button>
-          </el-col>
-        </el-col>
-      </el-row>
-      <!-- table表格区 -->
-      <el-table :data="goodsList" border stripe v-loading="loading">
-        <!-- 索引列 -->
-        <el-table-column type="index" label="#"></el-table-column>
-        <!-- 商品名称 -->
-        <el-table-column label="商品名称" prop="goods_name"></el-table-column>
-        <!-- 商品价格 -->
-        <el-table-column
-          label="商品价格(元)"
-          prop="goods_price"
-          width="105px"
-        ></el-table-column>
-        <!-- 商品重量 -->
-        <el-table-column
-          label="商品重量"
-          width="80px"
-          prop="goods_weight"
-        ></el-table-column>
-        <!-- 创建时间 -->
-        <el-table-column label="创建时间" width="170px" prop="add_time">
-          <!-- 使用插槽修改时间格式，使用全局过滤器 dateFormat -->
-          <template slot-scope="scope">
-            {{ scope.row.add_time | dateFormat }}
-          </template>
-        </el-table-column>
-        <!-- 操作 -->
-        <el-table-column label="操作" width="125px">
-          <template slot-scope="scope">
-            <!-- 编辑 -->
-            <el-tooltip
-              class="item"
-              effect="dark"
-              content="编辑商品"
-              placement="top"
-            >
-              <el-button
-                type="primary"
-                size="mini"
-                icon="el-icon-edit"
-                @click="editGoods(scope.row.goods_id)"
-              ></el-button>
-            </el-tooltip>
-            <!-- 删除 -->
-            <el-tooltip
-              class="item"
-              effect="dark"
-              content="删除商品"
-              placement="top"
-            >
-              <el-button
-                type="danger"
-                size="mini"
-                icon="el-icon-delete"
-                @click="removerById(scope.row.goods_id)"
-              ></el-button>
-            </el-tooltip>
-          </template>
-        </el-table-column>
-      </el-table>
-      <!-- 分页区 -->
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="queryInfo.pagenum"
-        :page-sizes="[5, 10, 15, 20]"
-        :page-size="queryInfo.pagesize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-        background
-      >
-      </el-pagination>
+          </el-pagination>
+        </div>
+      </div>
     </el-card>
   </div>
 </template>
@@ -115,13 +134,13 @@ export default {
       queryInfo: {
         query: '',
         pagenum: 1,
-        pagesize: 5
+        pagesize: 5,
       },
       // 商品里列表
       goodsList: [],
       // 总列表数
       total: 0,
-      loading: true
+      loading: true,
     }
   },
   created() {
@@ -131,18 +150,21 @@ export default {
   methods: {
     // 根据分页获取对应商品列表
     async getGoodsList() {
-      const { data: res } = await this.$http.get('goods', {
-        params: this.queryInfo
-      })
+      try {
+        const { data: res } = await this.$http.get('goods', {
+          params: this.queryInfo,
+        })
 
-      if (res.meta.status !== 200) {
-        this.loading = false
-        return this.$message.error('获取商品里列表失败！')
+        if (res.meta.status !== 200) {
+          return this.$message.error('获取商品列表失败！')
+        }
+
+        // 将获取的数据赋值到 data 里
+        this.goodsList = res.data.goods
+        this.total = res.data.total
+      } catch (error) {
+        this.$message.error('获取商品列表失败！')
       }
-
-      // 将获取的数据赋值到 data 里
-      this.goodsList = res.data.goods
-      this.total = res.data.total
       this.loading = false
     },
     // 监听页数大小事件，一页显示几条数据
@@ -158,7 +180,7 @@ export default {
       this.getGoodsList()
     },
     // 编辑商品
-    async editGoods(id) {
+    async editGoods() {
       // var { data: res } = await this.$http.put('goods/' + id, {})
     },
     // 删除商品
@@ -170,32 +192,65 @@ export default {
         {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
-          type: 'warning'
+          type: 'warning',
         }
-      ).catch(err => err)
+      ).catch((err) => err)
 
       // 用户取消删除
       if (confirmResult !== 'confirm') {
         return this.$message({
           type: 'info',
-          message: '已取消删除'
+          message: '已取消删除',
         })
       }
       // 发起请求
-      const { data: res } = await this.$http.delete('goods/' + id)
-
-      if (res.meta.status !== 200) return this.$message.error('删除失败！')
-
-      this.$message.success('删除成功！')
-      // 刷新列表
-      this.getGoodsList()
+      try {
+        const { data: res } = await this.$http.delete('goods/' + id)
+        if (res.meta.status !== 200) return this.$message.error('删除失败！')
+        this.$message.success('删除成功！')
+        // 刷新列表
+        this.getGoodsList()
+      } catch (error) {
+        this.$message.error('删除失败！')
+      }
     },
     // 跳转到添加商品页
     goAddpage() {
       // 路由跳转
       this.$router.push('/goods/add')
+    },
+  },
+}
+</script>
+<style lang="less" scoped>
+.main_wrap {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  .el-card {
+    height: 100%;
+
+    .main {
+      display: flex;
+      padding: 20px;
+      height: 100%;
+      flex-direction: column;
+
+      > .search {
+        flex: 0 0 40px;
+      }
+
+      > .content {
+        margin-top: 10px;
+        flex: 1;
+        overflow: auto;
+      }
+
+      > .pagination {
+        flex: 0 0 87px;
+        margin-top: auto;
+      }
     }
   }
 }
-</script>
-<style lang="less" scoped></style>
+</style>

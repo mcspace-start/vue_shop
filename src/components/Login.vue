@@ -50,7 +50,7 @@ export default {
       // 这是登录表单的数据对象
       loginForm: {
         username: 'admin',
-        password: '123456'
+        password: '123456',
       },
       // 这是表单数据验证规则对象
       loginFormRules: {
@@ -61,8 +61,8 @@ export default {
             min: 3,
             max: 10,
             message: '长度在 3 到 10 个字符',
-            trigger: 'blur'
-          }
+            trigger: 'blur',
+          },
         ],
         // 验证密码是否合法
         password: [
@@ -71,12 +71,12 @@ export default {
             min: 6,
             max: 15,
             message: '长度在 6 到 15 个字符',
-            trigger: 'blur'
-          }
-        ]
+            trigger: 'blur',
+          },
+        ],
       },
       // true为登录中，登录成功后false
-      loading: false
+      loading: false,
     }
   },
   methods: {
@@ -95,39 +95,30 @@ export default {
           this.loading = false
           return
         }
-        // 校验通过 发起登录请求
-        const { data: res } = await this.$http.post('login', this.loginForm, {
-          timeout: 1000
-        })
-        // const res = {
-        //   meta: {
-        //     status: 200
-        //   },
-        //   data: {
-        //     token: 'asd123'
-        //   }
-        // }
-        // 如果失败
-        if (res.meta.status !== 200) {
+        try {
+          // 校验通过 发起登录请求
+          const { data: res } = await this.$http.post('login', this.loginForm)
+          // 如果失败
+          if (res.meta.status !== 200) {
+            this.loading = false
+            return this.$message.error(`登陆失败！${res.meta.msg}`)
+          }
+          // 成功-更改按钮样式
           this.loading = false
-          return this.$message.error(`登陆失败！${res.meta.msg}`)
+          this.$message.success('登录成功')
+          // 将token写入sessionStorage里
+          window.sessionStorage.setItem('token', res.data.token)
+          // 将欢迎页面激活，写死
+          window.sessionStorage.setItem('activePath', '/welcome')
+          // 通过编程式导航进行路由跳转
+          this.$router.push('/home')
+        } catch (err) {
+          this.loading = false
+          this.$message.error('登录失败')
         }
-        // 成功-更改按钮样式
-        this.loading = false
-        this.$message.success('登录成功')
-        // this.$message({
-        //   type: 'success',
-        //   message: '登录成功',
-        // })
-        // 将token写入sessionStorage里
-        window.sessionStorage.setItem('token', res.data.token)
-        // 将欢迎页面激活，写死
-        window.sessionStorage.setItem('activePath', '/welcome')
-        // 通过编程式导航进行路由跳转
-        this.$router.push('/home')
       })
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="less" scoped>

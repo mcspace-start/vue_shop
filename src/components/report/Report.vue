@@ -24,66 +24,96 @@ export default {
       // echarts数据对象（需要合并的数据）
       options: {
         title: {
-          text: '用户来源'
+          text: '用户来源',
         },
         tooltip: {
           trigger: 'axis',
           axisPointer: {
             type: 'cross',
             label: {
-              backgroundColor: '#999'
-            }
-          }
+              backgroundColor: '#999',
+            },
+          },
         },
         grid: {
           left: '3%',
           right: '4%',
           bottom: '3%',
-          containLabel: true
+          containLabel: true,
         },
         xAxis: [
           {
-            boundaryGap: false
-          }
+            boundaryGap: false,
+          },
         ],
         yAxis: [
           {
-            type: 'value'
-          }
-        ]
+            type: 'value',
+          },
+        ],
       },
-      loading: true
+      loading: false,
+      // 保存图表实例
+      chart: null,
     }
   },
-  created() {},
-  async mounted() {
-    // 初始化报表
-    var myChart = echarts.init(document.getElementById('main'))
-    // 准备数据和配置项
-    const { data: res } = await this.$http.get('reports/type/1')
-    if (res.meta.status !== 200) {
-      return this.$message.error('获取折线图数据失败!')
-    }
-    console.log(_.cloneDeep(res))
-    // 配置图表数据 (合并数据)
-    const result = _.merge(res.data, this.options)
-    console.log(result)
-    // 设置hover高亮时其他隐藏
-    result.series.forEach(item => {
-      item.emphasis = {
-        focus: 'series'
+  mounted() {
+    this.initEchart()
+    // 监听窗口大小变化
+    window.addEventListener('resize', this.handleResize)
+  },
+  // 组件销毁前
+  beforeDestroy() {
+    // 组件销毁前移除事件监听
+    window.removeEventListener('resize', this.handleResize)
+    // 销毁图表实例
+    this.chart && this.chart.dispose()
+  },
+  methods: {
+    async getData() {
+      // 准备数据和配置项
+      try {
+        const { data } = await this.$http.get('reports/type/1')
+        if (data.meta.status !== 200) {
+          this.$message.info(data.meta.msg)
+          return null
+        } else {
+          return data.data
+        }
+      } catch (error) {
+        this.$message.error('获取数据错误！')
       }
-    })
-    // 5. 使用刚指定的配置项和数据进行渲染
-    myChart.setOption(result)
-    this.loading = false
-  }
+      // 配置图表数据 (合并数据)
+    },
+    async initEchart() {
+      this.loading = true
+      const echartsData = await this.getData()
+      if (echartsData) {
+        // 初始化报表
+        this.chart = echarts.init(document.getElementById('main'))
+        const result = _.merge(echartsData, this.options)
+        // 设置hover高亮时其他隐藏
+        result.series.forEach((item) => {
+          item.emphasis = {
+            focus: 'series',
+          }
+        })
+        // 使用配置项和数据进行渲染
+        this.chart.setOption(result)
+      }
+      this.loading = false
+    },
+    // 处理窗口大小变化
+    handleResize() {
+      this.chart && this.chart.resize()
+    },
+  },
 }
 </script>
 
 <style lang="less" scoped>
 #main {
-  width: 760px;
+  width: 100%;
   height: 420px;
 }
 </style>
